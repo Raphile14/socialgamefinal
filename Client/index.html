@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> Spend Time Together </title>        
+
+        <!-- css script -->
+        <link rel="stylesheet" type="text/css" href="./css/style.css">
+    </head>
+
+    <body>
+        <!-- Login Section -->
+        <div id="login">
+            <p> Input Name </p>
+            <input id="loginUsername" type="text" class="input" value="" required/>
+            <button id="loginButton" type="button"> Enter </button>
+        </div>
+
+        <!-- Join Section -->
+        <div id="joinSelection">
+            <p> Join a Game </p>
+            <input id="joinCode" type="text" class="input" value="" placeholder="code of lobby" required/>
+            <button id="joinCodeButton" type="button"> Enter </button>
+            <p> Create a Game </p>            
+            <button id="createGuns1v1Button" type="button"> Guns1v1 </button>
+            <button id="createSnakeButton" type="button"> Snake </button>
+            <button id="createPongButton" type="button"> Pong </button>
+        </div>
+
+        <!-- Lobby Section -->
+        <div id="lobby">
+            <p id="lobbyGameMode"> </p>
+            <p id="lobbyCode"> </p>
+            <p id="lobbyPlayerList"> </p>
+            <button id="lobbyLeave" type="button"> Leave Lobby </button>
+        </div>
+
+        <!-- Move this to footer -->
+        <div id="info">
+            <p id="playerCount"> Players Online: 0 </p>     
+        </div>
+
+        <!-- Scripts -->
+        <!-- Socket.IO Script -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+        <!-- Local Scripts -->
+        <script src="./js/utility.js"></script> 
+        <script src="./js/app.js"></script>
+    </body>
+</html>

@@ -1,0 +1,10 @@
+/* Hide Elements Except Login on First Load */
+#joinSelection, #lobby {
+    display: none;
+}
+
+body {
+    background-image: url("/images/BG.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}

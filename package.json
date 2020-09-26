@@ -1,0 +1,24 @@
+{
+  "name": "socialgamefinal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Raphile14/socialgamefinal.git"
+  },
+  "author": "Raphael Dalangin and Abigail Dubouzet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Raphile14/socialgamefinal/issues"
+  },
+  "homepage": "https://github.com/Raphile14/socialgamefinal#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "shortid": "^2.2.15",
+    "socket.io": "^2.3.0"
+  }
+}
