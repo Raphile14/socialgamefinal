@@ -1,5 +1,4 @@
 // Initialization and Requirements
-let shortID = require('shortid');
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -9,6 +8,7 @@ const io = require('socket.io')(server);
 // Import Custom Classes
 let Player = require('./Classes/Player.js');
 let Lobby = require('./Classes/Lobby.js');
+let utility = require('./Classes/Utility.js');
 
 // Variables
 let playersOnline = 0;
@@ -18,6 +18,7 @@ let players = [];
 let sockets = [];
 // Storage for all Created and Ongoing Game Lobbies
 let lobbies = [];
+let Utility = new utility(lobbies, players);
 
 // Setting Up Express App
 app.use(express.static(__dirname + '/Client'));
@@ -45,11 +46,11 @@ io.on('connection', function(socket){
     socket.emit('registerClient', player);
 
     // Method to Handle Change Player Name
+    // TODO: Maybe add functionality to change name while ingame
     socket.on('changeUsername', function(data){
         players[player.id].username = data.username;
         // Return name to sender
         socket.emit('updateUsername', {id: player.id, username: player.username});
-        // TODO: Add code for other players in the lobby
         console.log(players[player.id].username);
     });
 
@@ -58,7 +59,8 @@ io.on('connection', function(socket){
         io.emit('playersOnline', {number: playersOnline});
 
         if (players[playerID].game.ingame) {
-            removeUser(lobbies[players[playerID].game.lobby_id], playerID);  
+            Utility.removeUser(lobbies[players[playerID].game.lobby_id], playerID, socket);  
+            console.log(players[playerID].username + " left a lobby!");
         }  
         // Remove Player from Dictionary Storage        
         delete players[playerID];
@@ -77,25 +79,21 @@ io.on('connection', function(socket){
         // Check if player already in a game or lobby
         if (!players[playerID].game.ingame) {
             // Create Lobby Cache and Store to Local Storage
-            var lobby = new Lobby();
-            lobbies[playerID] = lobby;
-            lobbies[playerID].id = playerID;
-            lobbies[playerID].creator = playerID;
-            lobbies[playerID].leader = playerID;
-            lobbies[playerID].gamemode = data.gamemode;
-            lobbies[playerID].players.push({id: playerID, username: players[playerID].username});
-
+            let lobby = new Lobby(playerID, data.gamemode);
+            lobbies[lobby.id] = lobby;  
+            lobby.addPlayer(playerID)          
+            console.log(lobbies[lobby.id])
             // Update Player Status
-            players[playerID].game.ingame = true;
-            players[playerID].game.lobby_id = playerID;
-            // console.log(lobbies);
-            console.log(lobbies[playerID].players);
+            players[playerID].setGame(lobby.id)
+            console.log(players[playerID])
 
-            // TODO: CREATE PRIVATE LOBBY HERE
+            // Join a Private Lobby
+            socket.join(lobby.id);
+
             socket.emit('createLobbySuccess', {
-                id: lobbies[playerID].id,
-                gamemode: lobbies[playerID].gamemode,
-                players: lobbies[playerID].players,
+                id: lobbies[lobby.id].id,
+                gamemode: lobbies[lobby.id].gamemode,
+                players: lobbies[lobby.id].players,
                 player: players[playerID]
             });
         }      
@@ -107,39 +105,44 @@ io.on('connection', function(socket){
         if (!lobbies[data.id]) {
             socket.emit('joinLobbyFail');
         }
-        // TODO: Add code for successful login
-        // TODO: USE SOCKET IO PRIVATE LOBBIES
+        else {
+            lobbies[data.id].players.push({id: playerID, username: players[playerID].username});
+            players[playerID].game.ingame = true;
+            players[playerID].game.lobby_id = data.id;
+            socket.join(data.id);
+            socket.emit('joinLobbySuccess');
+            io.to(data.id).emit('updateLobby', {
+                id: player.id,
+                gamemode: "Guns1v1",
+                lobby_id: data.id,
+                players: lobbies[data.id].players
+            });
+            console.log(players[playerID]);
+            io.to(data.id).emit('updatePlayer', players[playerID]);
+            for (var keys in lobbies[data.id].players) {
+                socket.emit('updatePlayer', players[lobbies[data.id].players[keys].id]);
+                console.log(lobbies[data.id].players[keys]);
+            }
+        }
     });
 
     // Leave Lobby
     socket.on('leaveLobby', function(data){
-        // TODO: Add code for leaving lobby
-        removeUser(lobbies[data.game.lobby_id], player.id);        
+        console.log(data);
+        Utility.removeUser(lobbies[data.game.lobby_id], data.id, socket);
+        socket.emit("leaveLobbyConfirmed");        
+        console.log("a player left a lobby");
+        socket.leave(data.game.lobby_id);
+        if (lobbies[data.game.lobby_id]) {
+            // Emit to other players in lobby
+            io.to(data.game.lobby_id).emit("updateLobby", {
+                id: player.id,
+                players: lobbies[data.game.lobby_id].players
+            });
+        }
     });
 });
 
-server.listen((process.env.PORT || 5000), function(){
-    console.log("Server Running on Port: " + (process.env.PORT || 5000));
+server.listen((process.env.PORT), function(){
+    console.log("Server Running on Port: " + process.env.PORT);
 });
-
-////////////////////////////////////////
-// Functions 
-////////////////////////////////////////
-
-function removeUser(lobby, id) {
-    if (lobby) {
-        if (lobby.players.length == 1) {
-            delete lobbies[lobby.id];
-            console.log("success");
-            console.log(lobbies);
-        }
-        else {
-            // TODO: Remove player from lobbies
-            // TODO: Update Player Status
-            players[id].game.ingame = false;
-            players[id].game.lobby_id = '';
-            // TODO: EMIT TO PRIVATE LOBBIES
-            socket.emit('updatePlayer', players[id]);
-        }
-    }
-}

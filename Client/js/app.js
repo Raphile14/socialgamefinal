@@ -35,9 +35,11 @@ try {
         players[data.id] = data;
     });
 
-    // Method to handle updated Username
+    // Method to handle updated Client Username
     socket.on('updateUsername', function(data){
-        players[data.id].username = data.username;
+        players[data.id].username = data.username;        
+        document.getElementById("name").innerText = "Welcome: " + data.username +"!";
+        show("joinSelection", "login");
         console.log(players[data.id].username);
         console.log(players);
     });
@@ -73,8 +75,23 @@ try {
             document.getElementById("loginUsername").value = "";
         }
         else {
-            show("joinSelection", "login");
-            socket.emit('changeUsername', {id: playerID, username: inputName});
+            socket.emit('changeUsername', {id: playerID, username: inputName});            
+        }
+    });
+
+    // Input Name Enter Logic
+    document.getElementById("changeButton").addEventListener("click", function(){
+        var inputName = document.getElementById("changeUsername").value;
+        if (inputName.length == 0) {
+            document.getElementById("changeUsername").placeholder = "Please Input a Name!";
+            document.getElementById("changeUsername").value = "";
+        }
+        else if (inputName.length < 3) {
+            document.getElementById("changeUsername").placeholder = "Name Too Short!";
+            document.getElementById("changeUsername").value = "";
+        }
+        else {
+            socket.emit('changeUsername', {id: playerID, username: inputName});            
         }
     });
 
@@ -83,15 +100,15 @@ try {
         socket.emit('createLobby', {gamemode: 'Guns1v1'});
     });
 
-    // Create Guns1v1 Lobby
-    document.getElementById("createSnakeButton").addEventListener("click", function(){
-        socket.emit('createLobby', {gamemode: 'Snake'});
-    });
+    // // Create Guns1v1 Lobby
+    // document.getElementById("createSnakeButton").addEventListener("click", function(){
+    //     socket.emit('createLobby', {gamemode: 'Snake'});
+    // });
 
-    // Create Guns1v1 Lobby
-    document.getElementById("createPongButton").addEventListener("click", function(){
-        socket.emit('createLobby', {gamemode: 'Pong'});
-    });
+    // // Create Guns1v1 Lobby
+    // document.getElementById("createPongButton").addEventListener("click", function(){
+    //     socket.emit('createLobby', {gamemode: 'Pong'});
+    // });
 
     // Success Creation of Lobby
     socket.on('createLobbySuccess', function(data){
@@ -107,28 +124,50 @@ try {
         show("lobby", "joinSelection");
     });
 
+    // Confirm Leave Lobby
+    socket.on('leaveLobbyConfirmed', function(){
+        show("joinSelection", "lobby");
+    });
+
+    // Update lobby
+    socket.on('updateLobby', function(data){
+        // TODO: Add code to change player list
+        delete players[data.id];
+        var playerNames = "Players: \n";
+        for (var x = 0; x < data.players.length; x++) {
+            playerNames += data.players[x].username + "\n";
+        }
+        document.getElementById("lobbyGameMode").innerText = "Gamemode: " + data.gamemode;
+        document.getElementById("lobbyCode").innerText = "Code: " + data.lobby_id;
+        document.getElementById("lobbyPlayerList").innerText = playerNames;
+        console.log("updating players")
+        console.log(players);
+    });
+
     // Join Lobby Query
     document.getElementById("joinCodeButton").addEventListener("click", function(){
-        var code = document.getElementById("lobbyJoinCode").value;
-        if (code.length != 9) {
-            document.getElementById("joinCode").value = "";
-            document.getElementById("joinCode").placeholder = "Invalid Code!";
-        }
-        else {
-            socket.emit('joinLobby', {id: code});
-        }        
+        var code = document.getElementById("joinCode").value;
+        socket.emit('joinLobby', {id: code});      
+    });
+
+    // Join Lobby Success
+    socket.on('joinLobbySuccess', function(){
+        document.getElementById("joinCode").value = "";
+        show("lobby", "joinSelection");
     });
 
     // Join Lobby Fail
     socket.on('joinLobbyFail', function(){
-        document.getElementById("lobbyJoinCode").value = "";
-        document.getElementById("lobbyJoinCode").placeholder = "Lobby does not exist!";
+        document.getElementById("joinCode").value = "";
+        document.getElementById("joinCode").placeholder = "Lobby does not exist!";
     });
 
     // Leave Lobby
     document.getElementById("lobbyLeave").addEventListener("click", function(){
+        console.log( players[playerID])
         socket.emit('leaveLobby', players[playerID]);            
     });
+    
 }
 catch (e) {
     console.log('Lost connection to server!')

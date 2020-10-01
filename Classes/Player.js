@@ -9,4 +9,8 @@ module.exports = class Player {
             lobby_id : ''
         }
     }
+    setGame(lobby_id) {
+        this.game.ingame = true;
+        this.game.lobby_id = lobby_id;
+    }
 }
