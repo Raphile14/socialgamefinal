@@ -1,11 +1,28 @@
 /* Hide Elements Except Login on First Load */
-#selectionJoin, #lobby {
+#sectionMenu, #sectionLobby {
     display: none;
 }
 
-#sectionLogin {
-    margin-top: 5%;
-    /* margin-bottom: auto; */
+/* Lobby Section */
+#lobbyHeader {
+    margin: 10px;
+    color: white;
+}
+/* Chat Area */
+#chatArea {
+    height: 350px;
+    overflow-y: auto;
+    width: auto;
+    color: white;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.message {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 /* Media Queries */
@@ -25,7 +42,7 @@
 
 }
 
-/* Login Animation */
+/* Animation */
 .wrapper {
     display: flex;
     align-items: center;
@@ -63,8 +80,6 @@
     margin: 25px;
 }
 
-/* ANIMATIONS */
-/* Simple CSS3 Fade-in-down Animation */
 .fadeInDown {
     -webkit-animation-name: fadeInDown;
     animation-name: fadeInDown;
@@ -100,7 +115,6 @@
     }
 }
   
-/* Simple CSS3 Fade-in Animation */
 @-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 @-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -163,3 +177,4 @@
 .underlineHover:hover:after{
     width: 100%;
 }
+

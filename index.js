@@ -76,16 +76,17 @@ io.on('connection', function(socket){
     
     // Lobby Creation
     socket.on('createLobby', function(data){
+        console.log("create")
         // Check if player already in a game or lobby
         if (!players[playerID].game.ingame) {
             // Create Lobby Cache and Store to Local Storage
             let lobby = new Lobby(playerID, data.gamemode);
             lobbies[lobby.id] = lobby;  
-            lobby.addPlayer(playerID)          
-            console.log(lobbies[lobby.id])
+            lobby.addPlayer({id: playerID, username: players[playerID].username});          
+            console.log(lobbies[lobby.id]);
             // Update Player Status
             players[playerID].setGame(lobby.id)
-            console.log(players[playerID])
+            console.log(players[playerID]);
 
             // Join a Private Lobby
             socket.join(lobby.id);
@@ -126,17 +127,26 @@ io.on('connection', function(socket){
         }
     });
 
+    // Send Chat Message
+    socket.on('sendChatMessage', (data) => {
+        if (players[data.id].game.ingame && players[data.id].game.lobby_id != '') {
+            io.to(players[data.id].game.lobby_id).emit('receiveChatMessage', {sender: players[data.id].username, message: data.message});
+        }
+    });
+
     // Leave Lobby
-    socket.on('leaveLobby', function(data){
+    socket.on('leaveLobby', (data) => {
         console.log(data);
-        Utility.removeUser(lobbies[data.game.lobby_id], data.id, socket);
-        socket.emit("leaveLobbyConfirmed");        
+        Utility.removeUser(lobbies[data.game.lobby_id], data.id, socket);              
         console.log("a player left a lobby");
         socket.leave(data.game.lobby_id);
+        socket.emit("leaveLobbyConfirmed");  
         if (lobbies[data.game.lobby_id]) {
             // Emit to other players in lobby
             io.to(data.game.lobby_id).emit("updateLobby", {
                 id: player.id,
+                gamemode: "Guns1v1",
+                lobby_id: data.game.lobby_id,
                 players: lobbies[data.game.lobby_id].players
             });
         }

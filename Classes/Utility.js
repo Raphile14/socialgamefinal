@@ -7,8 +7,10 @@ module.exports = class Utility {
         this.lobbies = lobbies;
         this.players = players;
     }
-    removeUser(lobby, id, socket) {
+    removeUser(lobby, id, socket) {     
         if (lobby) {
+            this.players[id].game.ingame = false;
+            this.players[id].game.lobby_id = '';
             if (lobby.players.length == 1) {
                 delete this.lobbies[lobby.id];
                 console.log("lobby: " + lobby.id + " has been deleted");
@@ -28,9 +30,7 @@ module.exports = class Utility {
                 this.lobbies[lobby.id].players.splice(index, 1);
                 console.log("players in lobby: ");
                 console.log(this.lobbies[lobby.id].players)
-                // Update Player Status
-                this.players[id].game.ingame = false;
-                this.players[id].game.lobby_id = '';
+                // Update Player Status                
                 socket.emit('updatePlayer', this.players[id]);
             }
         }

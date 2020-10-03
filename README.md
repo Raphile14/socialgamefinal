@@ -4,6 +4,14 @@
 Spend Time Together is a group project in fulfilling a course final test for Software Engineering and Integrative Programming. The main goal of this project is to create a system that supports cross-platform compatability and provide an app for older adults to enjoy!
 
 # Changelog
+indev 0.4.0 (10/03/2020)
+- Added more lobby functionalities
+- Force reload when server restarts
+- Bug fixes
+- Major Code Restructure
+- Added a button to copy code
+- Implemented in lobby chat system
+
 indev 0.3.0 (10/01/2020)
 - Remade the main page
 
