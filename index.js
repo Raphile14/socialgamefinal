@@ -51,16 +51,16 @@ io.on('connection', function(socket){
         players[player.id].username = data.username;
         // Return name to sender
         socket.emit('updateUsername', {id: player.id, username: player.username});
-        console.log(players[player.id].username);
     });
 
     socket.on('disconnect', function(){
         playersOnline--;
         io.emit('playersOnline', {number: playersOnline});
-
-        if (players[playerID].game.ingame) {
-            Utility.removeUser(lobbies[players[playerID].game.lobby_id], playerID, socket);  
-            console.log(players[playerID].username + " left a lobby!");
+        let username = players[playerID].username;
+        let lobbyID = players[playerID].game.lobby_id;
+        if (players[playerID].game.ingame) {            
+            Utility.removeUser(lobbies[players[playerID].game.lobby_id], playerID, socket);            
+            updateLobby(lobbyID, playerID, username, lobbies[lobbyID].players, false);
         }  
         // Remove Player from Dictionary Storage        
         delete players[playerID];
@@ -76,17 +76,14 @@ io.on('connection', function(socket){
     
     // Lobby Creation
     socket.on('createLobby', function(data){
-        console.log("create")
         // Check if player already in a game or lobby
         if (!players[playerID].game.ingame) {
             // Create Lobby Cache and Store to Local Storage
             let lobby = new Lobby(playerID, data.gamemode);
             lobbies[lobby.id] = lobby;  
             lobby.addPlayer({id: playerID, username: players[playerID].username});          
-            console.log(lobbies[lobby.id]);
             // Update Player Status
             players[playerID].setGame(lobby.id)
-            console.log(players[playerID]);
 
             // Join a Private Lobby
             socket.join(lobby.id);
@@ -112,18 +109,11 @@ io.on('connection', function(socket){
             players[playerID].game.lobby_id = data.id;
             socket.join(data.id);
             socket.emit('joinLobbySuccess');
-            io.to(data.id).emit('updateLobby', {
-                id: player.id,
-                gamemode: "Guns1v1",
-                lobby_id: data.id,
-                players: lobbies[data.id].players
-            });
-            console.log(players[playerID]);
+            updateLobby(data.id, player.id, players[player.id].username, lobbies[data.id].players, true);
             io.to(data.id).emit('updatePlayer', players[playerID]);
             for (var keys in lobbies[data.id].players) {
                 socket.emit('updatePlayer', players[lobbies[data.id].players[keys].id]);
-                console.log(lobbies[data.id].players[keys]);
-            }
+            };            
         }
     });
 
@@ -136,23 +126,25 @@ io.on('connection', function(socket){
 
     // Leave Lobby
     socket.on('leaveLobby', (data) => {
-        console.log(data);
         Utility.removeUser(lobbies[data.game.lobby_id], data.id, socket);              
-        console.log("a player left a lobby");
         socket.leave(data.game.lobby_id);
         socket.emit("leaveLobbyConfirmed");  
         if (lobbies[data.game.lobby_id]) {
-            // Emit to other players in lobby
-            io.to(data.game.lobby_id).emit("updateLobby", {
-                id: player.id,
-                gamemode: "Guns1v1",
-                lobby_id: data.game.lobby_id,
-                players: lobbies[data.game.lobby_id].players
-            });
+            updateLobby(data.game.lobby_id, player.id, players[player.id].username, lobbies[data.game.lobby_id].players, false)
         }
     });
 });
 
-server.listen((process.env.PORT), function(){
+server.listen((process.env.PORT), () => {
     console.log("Server Running on Port: " + process.env.PORT);
 });
+
+////////////////////////////////////////
+// Helper Functions
+////////////////////////////////////////
+// Updating Lobby
+function updateLobby(lobbyID, playerID, username, players, join) {
+    io.to(lobbyID).emit("updateLobby", {
+        id: playerID, username, gamemode: "Guns1v1", lobby_id: lobbyID, players, join
+    });
+}

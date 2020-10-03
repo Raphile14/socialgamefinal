@@ -47,7 +47,6 @@ $(document).ready(() => {
     });
     // Leave Lobby
     $("#lobbyLeave").click(() => {
-        console.log(players)
         if (players[player_id].game.ingame) {
             socket.emit('leaveLobby', players[player_id]);
         }        
@@ -78,8 +77,6 @@ socket.on('registerClient', (data) => {
     else {
         location.reload();
     } 
-    console.log("me:");
-    console.log(players);
 });
 
 // Method to handle updated Client Username on entering
@@ -87,43 +84,46 @@ socket.on('updateUsername', (data) => {
     players[data.id].username = data.username;     
     $("#client_name").text(data.username);
     show("#sectionMenu", "#sectionLogin");
-    console.log(players[data.id].username);
-    console.log(players);
 });
 
 // Creating a lobby
 socket.on('createLobbySuccess', (data) => {
-    console.log(data);
     players[player_id] = data.player;
-    console.log(players[player_id]);
     $("#lobbyGameMode").text(data.gamemode);
     $("#lobbyCode").text(data.id);
-    var playerNames = "Players: \n";
+    $("#lobbyPlayerList").html('');
+    var playerNames = "<p> Players: <ul>";
     for (var x = 0; x < data.players.length; x++) {
-        playerNames += data.players[x].username + "\n";
+        playerNames += "<li>" + data.players[x].username + "</li>";
     }
-    console.log(playerNames);
-    $("#lobbyPlayerList").text(playerNames);
+    playerNames += "</ul> </p>";
+    $("#lobbyPlayerList").append(playerNames);
     show("#sectionLobby", "#sectionMenu");
 });
 
 // Receive Player Status Update from server
-socket.on('updatePlayer', (data) => {
-    players[data.id] = data;
+socket.on('updatePlayer', (data) => {    
+    players[data.id] = data;    
 });
 
 // Update lobby
-socket.on('updateLobby', (data) => {
-    delete players[data.id];
-    var playerNames = "Players: \n";
-    for (var x = 0; x < data.players.length; x++) {
-        playerNames += data.players[x].username + "\n";
+socket.on('updateLobby', (data) => { 
+    if (data.join) {
+        $("#chatArea").append('<p class="message"> ' + data.username + " joined the game! </p>");
     }
+    else if (!data.join) {
+        $("#chatArea").append('<p class="message"> ' + players[data.id].username + " left the game! </p>");
+    }
+    delete players[data.id];
+    $("#lobbyPlayerList").html('');
+    var playerNames = "<p> Players: <ul>";    
+    for (var x = 0; x < data.players.length; x++) {
+        playerNames += "<li>" + data.players[x].username + "</li>";
+    }
+    playerNames += "</ul> </p>";
     $("#lobbyGameMode").text(data.gamemode);
     $("#lobbyCode").text(data.lobby_id);
-    $("#lobbyPlayerList").text(playerNames);
-    console.log("updating players")
-    console.log(players);
+    $("#lobbyPlayerList").append(playerNames);    
 });
 
 // Confirm Leave Lobby
@@ -153,7 +153,7 @@ socket.on('receiveChatMessage', (data) => {
 });
 
 ////////////////////////////////////////
-// Functions
+// Helper Functions
 ////////////////////////////////////////
 function changeName (field) {
     let inputName = $(field);
