@@ -54,7 +54,12 @@ $(document).ready(() => {
     // Send Chat Message
     $("#chatInputButton").click(() => {
         if (players[player_id].game.ingame && players[player_id].game.lobby_id != '') {
-            socket.emit('sendChatMessage', {id: player_id, message: $("#chatInput").val()});
+            if ($("#chatInput").val().length > 0) {
+                socket.emit('sendChatMessage', {id: player_id, message: $("#chatInput").val()});                
+            }         
+            else {
+                $("#chatInput").attr("placeholder", "Please enter a message!");
+            }   
             $("#chatInput").val('');
         }
     });
@@ -116,7 +121,7 @@ socket.on('updateLobby', (data) => {
     }
     delete players[data.id];
     $("#lobbyPlayerList").html('');
-    var playerNames = "<p> Players: <ul>";    
+    var playerNames = "<p> Players (" + data.players.length +  "): <ul>";    
     for (var x = 0; x < data.players.length; x++) {
         playerNames += "<li>" + data.players[x].username + "</li>";
     }
@@ -149,7 +154,10 @@ socket.on('joinLobbyFail', () => {
 
 // Receive a chat message
 socket.on('receiveChatMessage', (data) => {
-    $("#chatArea").append('<p class="message"> ' + data.sender + ": " + data.message + " </p>")
+    let $p = $('<p>').text(data.sender + ": " + data.message);
+    $p.addClass("message");
+    $("#chatArea").append($p);
+    // $("#chatArea").animate({ scrollTop: $('#chatArea').prop("scrollHeight")}, 1000);    
 });
 
 ////////////////////////////////////////

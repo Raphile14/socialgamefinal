@@ -4,6 +4,11 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Icon -->
+        <link rel="icon" href="./images/logo.png">
+        <!-- Font -->
+        <!-- <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Teko&display=swap" rel="stylesheet"> -->
+        <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&display=swap" rel="stylesheet">
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
         <!-- css script -->
@@ -16,18 +21,18 @@
         <div id="sectionLogin" class="">            
             <div class="wrapper fadeInDown">
                 <div id="formContent">      
-                    <div class="jumbotron text-center fadeIn first">
+                    <div id="title_header" class="jumbotron text-center fadeIn first">
                         <h1> SPEND TIME TOGETHER </h1>
                     </div>                      
                     <!-- Login Form -->
                     <div class="loginArea">
-                        <input type="text" id="username" class="fadeIn second" name="login" placeholder="Enter Name">                    
-                        <input id="submitUsername" type="submit" class="fadeIn second" value="Enter Game">
+                        <input type="text" id="username" class="fadeIn second" name="login" placeholder="Enter Name">                                            
                     </div>                    
               
                     <!-- Remind Passowrd -->
                     <div id="formFooter">
-                        <a class="underlineHover fadeIn third" href="#"> How to Play </a>
+                        <input id="submitUsername" type="submit" class="fadeIn second" value="ENTER GAME">
+                        <!-- <a class="underlineHover fadeIn third" href="#"> How to Play </a> -->
                     </div>              
                 </div>
             </div>            
@@ -36,7 +41,7 @@
         <!-- JOIN CREATE SECTION -->
         <div id="sectionMenu">
             <div class="jumbotron text-center fadeIn first">
-                <h1> Welcome: <span id="client_name"> </span>! </h1>
+                <h1> Welcome, <span id="client_name"> </span>! </h1>
             </div>   
             <div class="container">
                 <div class="row justify-content-center fadeIn second">
@@ -68,7 +73,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-6">                    
-                        <div class="bg-light container fadeIn second">
+                        <div class="bg-light text-left container fadeIn second">
                             <p> Code: <span id="lobbyCode"> </span> <span id="copyNotif"> </span> </p> 
                             <button id="lobbyCopy" type="button"> Copy Code </button>
                             <p id="lobbyPlayerList"> </p>
@@ -77,7 +82,7 @@
                     </div>
                     <div class="bg-light col-lg-6 fadeIn third">
                         <h2> Lobby Chat </h2>
-                        <div id="chatArea" class="bg-primary"> </div>
+                        <div id="chatArea" class="bg-primary text-left"> </div>
                         <input type="text" id="chatInput">
                         <button id="chatInputButton" type="button"> Send </button>
                     </div>                
@@ -94,10 +99,10 @@
                     Players Online: <span id="player_count"> 0 </span>
                 </div>
                 <div class="col-lg-4 text-center">
-                    <a class="underlineHover" href="#"> How to Play </a>
+                    <a id="tutorial" class="underlineHover" href="#"> How to Play </a>
                 </div>   
                 <div class="col-lg-4 text-right">
-                    Created by: Dalangin, Dubouzet, Ferrazzini, Llido
+                    Created by: DDFL
                 </div>
             </div>                     
         </div>

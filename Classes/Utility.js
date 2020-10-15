@@ -13,8 +13,8 @@ module.exports = class Utility {
             this.players[id].game.lobby_id = '';
             if (lobby.players.length == 1) {
                 delete this.lobbies[lobby.id];
-                console.log("lobby: " + lobby.id + " has been deleted");
-                console.log(this.lobbies);
+                // console.log("lobby: " + lobby.id + " has been deleted");
+                // console.log(this.lobbies);
             }
             else {
                 var index = 0;
@@ -24,12 +24,12 @@ module.exports = class Utility {
                     if (this.lobbies[lobby.id].players[x].id == id) {
                         index = x;
                     }         
-                    console.log("removing index: " + index);
-                    console.log(this.lobbies[lobby.id].players[x].id);                               
+                    // console.log("removing index: " + index);
+                    // console.log(this.lobbies[lobby.id].players[x].id);                               
                 }    
                 this.lobbies[lobby.id].players.splice(index, 1);
-                console.log("players in lobby: ");
-                console.log(this.lobbies[lobby.id].players)
+                // console.log("players in lobby: ");
+                // console.log(this.lobbies[lobby.id].players)
                 // Update Player Status                
                 socket.emit('updatePlayer', this.players[id]);
             }
