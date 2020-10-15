@@ -63,6 +63,12 @@ $(document).ready(() => {
             $("#chatInput").val('');
         }
     });
+    // Start Game
+    $("#lobbyStart").click(()=>{
+        if (players[player_id].game.ingame && players[player_id].game.lobby_id != '') {
+            socket.emit('lobbyStart', {id: player_id, lobby_id: players[player_id].game.lobby_id});
+        }        
+    });
 });
 
 ////////////////////////////////////////
@@ -152,12 +158,30 @@ socket.on('joinLobbyFail', () => {
     $("#joinCode").attr("placeholder", "Lobby does not exist!");
 });
 
+// Game Ongoing
+socket.on('gameOngoing', () => {
+    $("#joinCode").val("");    
+    $("#joinCode").attr("placeholder", "Game is ongoing!");
+})
+
 // Receive a chat message
 socket.on('receiveChatMessage', (data) => {
     let $p = $('<p>').text(data.sender + ": " + data.message);
     $p.addClass("message");
     $("#chatArea").append($p);
     // $("#chatArea").animate({ scrollTop: $('#chatArea').prop("scrollHeight")}, 1000);    
+});
+
+// Fail Start of Game
+socket.on('lobbyStartFail', ()=>{
+    let $p = $('<p>').text("Failed to start game! Need 2 or more players!");
+    $p.addClass("message");
+    $("#chatArea").append($p);
+});
+
+// Success Start of Game
+socket.on('lobbyStartSuccess', ()=> {
+    show("#gameArea", "#lobbyControls");
 });
 
 ////////////////////////////////////////

@@ -76,7 +76,7 @@ module.exports = class SocketIO {
                     // Create Lobby Cache and Store to Local Storage
                     let lobby = new Lobby(playerID, data.gamemode);
                     lobbies[lobby.id] = lobby;  
-                    lobby.addPlayer({id: playerID, username: players[playerID].username});          
+                    lobby.addPlayer({id: playerID, username: players[playerID].username, score: 0});          
                     // Update Player Status
                     players[playerID].setGame(lobby.id)
 
@@ -99,16 +99,21 @@ module.exports = class SocketIO {
                     socket.emit('joinLobbyFail');
                 }
                 else {
-                    lobbies[data.id].players.push({id: playerID, username: players[playerID].username});
-                    players[playerID].game.ingame = true;
-                    players[playerID].game.lobby_id = data.id;
-                    socket.join(data.id);
-                    socket.emit('joinLobbySuccess');
-                    updateLobby(data.id, player.id, players[player.id].username, lobbies[data.id].players, true);
-                    io.to(data.id).emit('updatePlayer', players[playerID]);
-                    for (var keys in lobbies[data.id].players) {
-                        socket.emit('updatePlayer', players[lobbies[data.id].players[keys].id]);
-                    };            
+                    if (!lobbies[data.id].game.ongoing) {
+                        lobbies[data.id].addPlayer({id: playerID, username: players[playerID].username, score: 0});
+                        players[playerID].game.ingame = true;
+                        players[playerID].game.lobby_id = data.id;
+                        socket.join(data.id);
+                        socket.emit('joinLobbySuccess');
+                        updateLobby(data.id, player.id, players[player.id].username, lobbies[data.id].players, true);
+                        io.to(data.id).emit('updatePlayer', players[playerID]);
+                        for (var keys in lobbies[data.id].players) {
+                            socket.emit('updatePlayer', players[lobbies[data.id].players[keys].id]);
+                        };
+                    }
+                    else {
+                        socket.emit('gameOngoing');
+                    }                                
                 }
             });
 
@@ -126,6 +131,20 @@ module.exports = class SocketIO {
                 socket.emit("leaveLobbyConfirmed");  
                 if (lobbies[data.game.lobby_id]) {
                     updateLobby(data.game.lobby_id, player.id, players[player.id].username, lobbies[data.game.lobby_id].players, false)
+                }
+            });
+
+            // Start Game
+            socket.on('lobbyStart', (data)=>{
+                if (lobbies[data.lobby_id]) {
+                    if (lobbies[data.lobby_id].players.length < 2) {
+                        io.to(players[data.id].game.lobby_id).emit('lobbyStartFail');
+                    }
+                    else {
+                        lobbies[data.lobby_id].game.ongoing = true;
+                        lobbies[data.lobby_id].generateQueue();
+                        io.to(players[data.id].game.lobby_id).emit('lobbyStartSuccess');
+                    }
                 }
             });
         });

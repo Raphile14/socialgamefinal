@@ -33,7 +33,7 @@ button, #submitUsername {
 }
 
 /* Hide Elements Except Login on First Load */
-#sectionMenu, #sectionLobby {
+#sectionMenu, #sectionLobby, #gameArea {
     display: none;
 }
 
