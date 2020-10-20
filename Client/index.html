@@ -72,7 +72,7 @@
             </div>
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-6">                    
+                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">                    
                         <div id="lobbyControls" class="bg-light text-left container fadeIn second">
                             <p> Code: <span id="lobbyCode"> </span> <span id="copyNotif"> </span> </p> 
                             <button id="lobbyCopy" type="button"> Copy Code </button>
@@ -80,11 +80,122 @@
                             <p id="lobbyPlayerList"> </p>
                             <button id="lobbyLeave" type="button"> Leave Lobby </button>
                         </div> 
-                        <div id="gameArea" class="bg-light text-left container fadeIn second">
-                            <p> TEST </p>
+
+                        <div id="scoreArea" class="text-center">
+                            <h2> Scores </h2>
+                            <hr class="style1">
+                            <div id="scores">
+
+                            </div>
+                            <button id="scoreLeave" type="button"> Leave Lobby </button>
+                        </div>
+
+                        <div id="gameArea" class="bg-light text-center container fadeIn second">
+                            <h2> Game Area </h2>
+                            <hr class="style1">
+
+                            <h3 id="player1">  </h3>
+                            <br>
+                            <div id="player1Action">
+                                <div class="container text-center">
+                                    <div class="">
+                                        <div id="charge1" class="text-center">
+                                            <img class="action" src="./images/actions/charge.png" alt="">                                       
+                                        </div>
+                                        <div id="pistol1" class="text-center">
+                                            <img class="action" src="./images/actions/pistol.png" alt="">
+                                        </div>
+                                        <div id="d_pistol1" class="text-center">
+                                            <img class="action" src="./images/actions/double_pistol.png" alt="">
+                                        </div>
+                                        <div id="block1" class="text-center">
+                                            <img class="action" src="./images/actions/block.png" alt="">
+                                        </div>
+                                        <div id="counter1" class="text-center">
+                                            <img class="action" src="./images/actions/counter.png" alt="">
+                                        </div>
+                                        <div id="evade1" class="text-center">
+                                            <img class="action" src="./images/actions/evade.png" alt="">
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>
+
+                            <br>
+
+                            <p id="status">  </p>
+
+                            <br>
+
+                            <div id="player2Action">
+                                <div class="container text-center">
+                                    <div class="text-center">
+                                        <div id="charge2" class="text-center">
+                                            <img class="action" src="./images/actions/charge.png" alt="">                                       
+                                        </div>
+                                        <div id="pistol2" class="text-center">
+                                            <img class="action" src="./images/actions/pistol.png" alt="">
+                                        </div>
+                                        <div id="d_pistol2" class="text-center">
+                                            <img class="action" src="./images/actions/double_pistol.png" alt="">
+                                        </div>
+                                        <div id="block2" class="text-center">
+                                            <img class="action" src="./images/actions/block.png" alt="">
+                                        </div>
+                                        <div id="counter2" class="text-center">
+                                            <img class="action" src="./images/actions/counter.png" alt="">
+                                        </div>
+                                        <div id="evade2" class="text-center">
+                                            <img class="action" src="./images/actions/evade.png" alt="">
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <br>
+                            <h3 id="player2">  </h3>
+
+                            <br>                         
+                            <!-- Player Actions -->
+                            <div id="choices" class="container text-center">
+                                <hr class="style1">
+                                <p> Charges: <span id="playerCharges"> 0 </span> </p>
+                                <div class="row text-center">
+                                    <div id="charge" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                        <button class="action">
+                                            <img class="action" src="./images/actions/charge.png" alt="">
+                                        </button>                                        
+                                    </div>
+                                    <div id="pistol" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                        <button class="action">
+                                            <img class="action" src="./images/actions/pistol.png" alt="">
+                                        </button>
+                                    </div>
+                                    <div id="d_pistol" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                        <button class="action">
+                                            <img class="action" src="./images/actions/double_pistol.png" alt="">
+                                        </button>                                        
+                                    </div>
+                                    <div id="block" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                        <button class="action">
+                                            <img class="action" src="./images/actions/block.png" alt="">
+                                        </button>                                        
+                                    </div>
+                                    <div id="counter" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                        <button class="action">
+                                            <img class="action" src="./images/actions/counter.png" alt="">
+                                        </button class="action">                                        
+                                    </div>
+                                    <div id="evade" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                        <button class="action">
+                                            <img class="action" src="./images/actions/evade.png" alt="">
+                                        </button>                                        
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
-                    <div class="bg-light col-lg-6 fadeIn third">
+                    <div class="bg-light col-6 col-sm-6 col-md-6 col-lg-6 fadeIn third">
                         <h2> Lobby Chat </h2>
                         <div id="chatArea" class="bg-primary text-left"> </div>
                         <input type="text" id="chatInput">

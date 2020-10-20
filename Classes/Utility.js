@@ -13,13 +13,12 @@ module.exports = class Utility {
             this.players[id].game.lobby_id = '';
             if (lobby.players.length == 1) {
                 delete this.lobbies[lobby.id];
-                // console.log("lobby: " + lobby.id + " has been deleted");
+                console.log("lobby: " + lobby.id + " has been deleted");
                 // console.log(this.lobbies);
             }
             else {
                 var index = 0;
-                // Remove player from lobbies
-                console.log("player length: " + this.lobbies[lobby.id].length);
+                // Remove player from lobbies                
                 for (var x = 0; x < this.lobbies[lobby.id].players.length; x++) {
                     if (this.lobbies[lobby.id].players[x].id == id) {
                         index = x;
@@ -30,7 +29,8 @@ module.exports = class Utility {
                 this.lobbies[lobby.id].players.splice(index, 1);
                 // console.log("players in lobby: ");
                 // console.log(this.lobbies[lobby.id].players)
-                // Update Player Status                
+                // Update Player Status      
+                console.log("player length: " + this.lobbies[lobby.id].players.length);          
                 socket.emit('updatePlayer', this.players[id]);
             }
         }

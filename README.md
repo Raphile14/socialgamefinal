@@ -4,6 +4,15 @@
 Spend Time Together is a group project in fulfilling a course final test for Software Engineering and Integrative Programming. The main goal of this project is to create a system that supports cross-platform compatability and provide an app for older adults to enjoy!
 
 # Changelog
+indev 2.0.0 (10/20/2020)
+- Main functionality done
+- Testing will commence
+- Deploy to heroku
+
+indev 1.2.0 (10/15/2020)
+- Sending player choices to server
+- Added Additional Buttons
+
 indev 1.1.0 (10/15/2020)
 - Basic Round Robin Algorithm
 - Initiate Game

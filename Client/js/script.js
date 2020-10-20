@@ -4,6 +4,8 @@
 let socket = io();
 let players = [];
 let player_id = '';
+let player1Code = '';
+let player2Code = '';
 
 $(document).ready(() => {
     // Enter Name Button
@@ -51,6 +53,11 @@ $(document).ready(() => {
             socket.emit('leaveLobby', players[player_id]);
         }        
     });
+    $("#scoreLeave").click(() => {
+        if (players[player_id].game.ingame) {
+            socket.emit('leaveLobby', players[player_id]);
+        }        
+    });
     // Send Chat Message
     $("#chatInputButton").click(() => {
         if (players[player_id].game.ingame && players[player_id].game.lobby_id != '') {
@@ -69,7 +76,33 @@ $(document).ready(() => {
             socket.emit('lobbyStart', {id: player_id, lobby_id: players[player_id].game.lobby_id});
         }        
     });
+    // Send Choice to server
+    // Send Charge
+    $("#charge").click(()=>{
+        sendChoice('charge');
+    });
+    $("#pistol").click(()=>{
+        sendChoice('pistol');
+    });
+    $("#d_pistol").click(()=>{
+        sendChoice('d_pistol');
+    });
+    $("#block").click(()=>{
+        sendChoice('block');
+    });
+    $("#counter").click(()=>{
+        sendChoice('counter');
+    });
+    $("#evade").click(()=>{
+        sendChoice('evade');
+    });
 });
+
+function sendChoice(choice) {
+    if (players[player_id].game.ingame && players[player_id].game.lobby_id != '') {
+        socket.emit('playerChoice', {id: player_id, lobby_id:players[player_id].game.lobby_id, choice})
+    }    
+}
 
 ////////////////////////////////////////
 // Socket Receive
@@ -179,9 +212,153 @@ socket.on('lobbyStartFail', ()=>{
     $("#chatArea").append($p);
 });
 
-// Success Start of Game
-socket.on('lobbyStartSuccess', ()=> {
+// Invalid Action
+socket.on('invalidAction', ()=>{
+    let $p = $('<p>').text("Invalid Action! Lacking Charges. Choose another one!");
+    $p.addClass("message");
+    $p.css('color', 'red');
+    $("#chatArea").append($p);
+});
+
+// Already Chosen
+socket.on('alreadyChosen', ()=>{
+    let $p = $('<p>').text("You already chose an action!");
+    $p.addClass("message");
+    $p.css('color', 'red');
+    $("#chatArea").append($p);
+});
+
+// Valid Action
+socket.on('validAction', (data)=>{
+    let $p = $('<p>').text("UPDATE: " + players[data.id].username + " has chosen an action!");
+    $p.addClass("message");
+    $("#chatArea").append($p);
+    if (player1Code == data.id) {
+        $("#player1").css('color', 'green');
+    }
+    else if (player2Code == data.id) {
+        $("#player2").css('color', 'green');
+    }
+});
+
+// Continuing Round
+socket.on('gameContinue', (data)=> {
+    if (player2Code == player_id && data.player1 == player_id) {
+        $("#playerCharges").text(data.player1Charges);
+    }
+    else if (player2Code == player_id && data.player2 == player_id) {
+        $("#playerCharges").text(data.player2Charges);
+    }
+    player1Show(data.player1Choice);
+    player2Show(data.player2Choice);
+    $("#player1").css('color', '#b29c44');
+    $("#player2").css('color', '#b29c44');
+    $("#status").text("DRAW");    
+});
+
+// End Game and Show Scores
+socket.on('gameEnd', (data)=> {
+    $("#scoreArea").show();
+    $("#gameArea").hide();
+    for (let x = 0; x < data.players.length; x++) {
+        let $w = $('<p>').text((x + 1) + ".) " + data.players[x].username + " (" + data.players[x].score + ")");
+        $w.addClass("message");
+        $("#scores").append($w);
+    }
+});
+
+// New Round
+socket.on('gameNew', (data, winner)=> {
+    let player1 = data.player1;
+    let player2 = data.player2;
+
+    let $w = $('<p>').text("UPDATE: " + players[winner.winner].username + " won the round!");
+    $w.addClass("message");
+    $w.css('color', 'green');
+    $("#chatArea").append($w);
+
+    let $p = $('<p>').text("UPDATE: A new round is starting!");
+    $p.addClass("message");
+    $("#chatArea").append($p);
+
+    $p = $('<p>').text(players[player1].username + " vs " + players[player2].username);
+    $p.addClass("message");
+    $p.css('color', 'green');
+    $("#chatArea").append($p);
+
+    // Show the choices
+    $("#choices").hide();
+    if (player_id == player1 || player_id == player2) {
+        $("#choices").show();
+    }
+
+    hidePast();
+    $("#status").text("VS");    
+    player1Code = player1;
+    player2Code = player2;
+    // Name Placement
+    // If client is not yet the player
+    if (player_id != player1 && player_id != player2) {
+        $("#player1").text(players[player1].username);
+        $("#player2").text(players[player2].username);
+    }
+    else if (player_id == player1) {
+        $("#player1").text(players[player2].username);
+        $("#player2").text(players[player1].username + " (You)");
+        player1Code = player2;
+        player2Code = player1;
+    }
+    else if (player_id == player2) {
+        $("#player1").text(players[player1].username);
+        $("#player2").text(players[player2].username + " (You)");
+    }
+    $("#player1").css('color', '#b29c44');
+    $("#player2").css('color', '#b29c44');
+});
+
+// Start of a round
+socket.on('gameStart', (data)=> {
+    let player1 = data.player1;
+    let player2 = data.player2;
+
+    // Show game area
+    let $p = $('<p>').text("UPDATE: Game is starting!");
+    $p.addClass("message");
+    $("#chatArea").append($p);
     show("#gameArea", "#lobbyControls");
+
+    $p = $('<p>').text(players[player1].username + " vs " + players[player2].username);
+    $p.addClass("message");
+    $p.css('color', 'green');
+    $("#chatArea").append($p);
+    
+    // If the client is one of the players of the current round
+    // Show the choices
+    $("#choices").hide();
+    if (player_id == player1 || player_id == player2) {
+        $("#choices").show();
+    }
+
+    player1Code = player1;
+    player2Code = player2;
+    // Name Placement
+    // If client is not yet the player
+    if (player_id != player1 && player_id != player2) {
+        $("#player1").text(players[player1].username);
+        $("#player2").text(players[player2].username);
+    }
+    else if (player_id == player1) {
+        $("#player1").text(players[player2].username);
+        $("#player2").text(players[player1].username + " (You)");
+        player1Code = player2;
+        player2Code = player1;
+    }
+    else if (player_id == player2) {
+        $("#player1").text(players[player1].username);
+        $("#player2").text(players[player2].username + " (You)");
+    }
+    $("#player1").css('color', '#b29c44');
+    $("#player2").css('color', '#b29c44');
 });
 
 ////////////////////////////////////////

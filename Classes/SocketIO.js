@@ -16,6 +16,11 @@ let sockets = [];
 let lobbies = [];
 let Utility = new utility(lobbies, players);
 
+// Game Logic
+let pistolDefeats = ["charge", "counter"];
+let dPistolDefeats = ["charge", "pistol", "counter", "evade"];
+let counterDefeats = ["block"];
+
 module.exports = class SocketIO {
     constructor(server) {
         // this.io = require('socket.io')(server);
@@ -46,17 +51,26 @@ module.exports = class SocketIO {
                 socket.emit('updateUsername', {id: player.id, username: player.username});
             });
 
-            socket.on('disconnect', function(){
+            socket.on('disconnect', async function(){
                 playersOnline--;
                 io.emit('playersOnline', {number: playersOnline});
                 let username = players[playerID].username;
                 let lobbyID = players[playerID].game.lobby_id;
-                if (players[playerID].game.ingame) {            
+                // If player is in the middle of the game
+                if (players[playerID].game.ingame) {    
+                    if (lobbies[lobbyID].game.player1 == playerID || lobbies[lobbyID].game.player2 == playerID) {
+                        if (lobbies[lobbyID].game.player1 == playerID) {
+                            updateGame({id: playerID, lobby_id: lobbyID, choice: ''}, true);
+                        }
+                        else {
+                            updateGame({id: playerID, lobby_id: lobbyID, choice: ''}, false);
+                        }
+                    }        
                     Utility.removeUser(lobbies[players[playerID].game.lobby_id], playerID, socket);         
                     if (lobbies[lobbyID]) {
                         updateLobby(lobbyID, playerID, username, lobbies[lobbyID].players, false);
                     }               
-                }  
+                }                                
                 // Remove Player from Dictionary Storage        
                 delete players[playerID];
                 // Remove Connection from Dictionary Storage
@@ -94,7 +108,7 @@ module.exports = class SocketIO {
             });
 
             // Join Lobby
-            socket.on('joinLobby', function(data){
+            socket.on('joinLobby', async (data) => {
                 if (!lobbies[data.id]) {
                     socket.emit('joinLobbyFail');
                 }
@@ -118,14 +132,14 @@ module.exports = class SocketIO {
             });
 
             // Send Chat Message
-            socket.on('sendChatMessage', (data) => {
+            socket.on('sendChatMessage', async (data) => {
                 if (players[data.id].game.ingame && players[data.id].game.lobby_id != '') {
                     io.to(players[data.id].game.lobby_id).emit('receiveChatMessage', {sender: players[data.id].username, message: data.message});
                 }
             });
 
             // Leave Lobby
-            socket.on('leaveLobby', (data) => {
+            socket.on('leaveLobby', async (data) => {
                 Utility.removeUser(lobbies[data.game.lobby_id], data.id, socket);              
                 socket.leave(data.game.lobby_id);
                 socket.emit("leaveLobbyConfirmed");  
@@ -135,16 +149,96 @@ module.exports = class SocketIO {
             });
 
             // Start Game
-            socket.on('lobbyStart', (data)=>{
+            socket.on('lobbyStart', async (data)=>{
                 if (lobbies[data.lobby_id]) {
                     if (lobbies[data.lobby_id].players.length < 2) {
                         io.to(players[data.id].game.lobby_id).emit('lobbyStartFail');
                     }
                     else {
                         lobbies[data.lobby_id].game.ongoing = true;
-                        lobbies[data.lobby_id].generateQueue();
-                        io.to(players[data.id].game.lobby_id).emit('lobbyStartSuccess');
+                        await lobbies[data.lobby_id].generateQueue();
+                        let fighters = await lobbies[data.lobby_id].assignPlayers();
+                        io.to(players[data.id].game.lobby_id).emit('gameStart', fighters);
                     }
+                }
+            });
+
+            // Receiving choices
+            socket.on('playerChoice', async(data)=> {
+                let valid = false;
+                let player = '';
+                if (lobbies[data.lobby_id]) {
+                    if (lobbies[data.lobby_id].game.player1 == data.id) {
+                        player = "player1";
+                    }
+                    else if (lobbies[data.lobby_id].game.player2 == data.id) {
+                        player = "player2";
+                    }
+                    // Update choices and checking of charges
+                    if (player != '' && lobbies[data.lobby_id].game[player+"Choice"] == '') {
+                        if (data.choice == 'charge') {
+                            lobbies[data.lobby_id].game[player+"Charges"] += 1;
+                            valid = true;
+                        }
+                        else if ((data.choice == 'pistol' || data.choice == 'counter') && lobbies[data.lobby_id].game[player+"Charges"] > 0) {
+                            lobbies[data.lobby_id].game[player+"Charges"] -= 1;
+                            valid = true;                      
+                        }
+                        else if (data.choice == 'd_pistol' && lobbies[data.lobby_id].game[player+"Charges"] > 1) {
+                            lobbies[data.lobby_id].game[player+"Charges"] -= 2;
+                            valid = true;                      
+                        }
+                        else if (data.choice == "block" || data.choice == "evade") {
+                            valid = true;
+                        }
+                        if (valid) {
+                            lobbies[data.lobby_id].game[player+"Choice"] = data.choice;
+                        }                        
+                    }
+                    if (valid) {
+                        io.to(data.lobby_id).emit('validAction', {id: data.id});
+                    }
+                    else {
+                        if (player != '' && lobbies[data.lobby_id].game[player+"Choice"] != '') {
+                            socket.emit('alreadyChosen');
+                        }
+                        else {
+                            socket.emit('invalidAction');
+                        }                        
+                    }
+                    // Check if both players have chosen actions and validate who wins or continue game
+                    if (lobbies[data.lobby_id].game["player1Choice"] != '' && lobbies[data.lobby_id].game["player2Choice"] != '') {
+                        let player1chosen = lobbies[data.lobby_id].game["player1Choice"];
+                        let player2chosen = lobbies[data.lobby_id].game["player2Choice"];
+                        let player1Win = false;
+                        let player2Win = false;
+                        if ((player1chosen == "pistol" && pistolDefeats.includes(player2chosen)) 
+                        || (player1chosen == "d_pistol" && dPistolDefeats.includes(player2chosen)) 
+                        || (player1chosen == "counter" && counterDefeats.includes(player2chosen))) {
+                            player1Win = true;
+                        }
+                        else if ((player2chosen == "pistol" && pistolDefeats.includes(player1chosen)) 
+                        || (player2chosen == "d_pistol" && dPistolDefeats.includes(player1chosen)) 
+                        || (player2chosen == "counter" && counterDefeats.includes(player1chosen))) {
+                            player2Win = true;
+                        }
+                        if (player1Win || player2Win) {
+                            updateGame(data, player2Win);
+                        }
+                        else {
+                            io.to(data.lobby_id).emit('gameContinue', {
+                                player1: lobbies[data.lobby_id].game.player1, 
+                                player1Charges: lobbies[data.lobby_id].game.player1Charges,
+                                player1Choice: lobbies[data.lobby_id].game.player1Choice,
+                                player2: lobbies[data.lobby_id].game.player2,
+                                player2Charges: lobbies[data.lobby_id].game.player2Charges,
+                                player2Choice: lobbies[data.lobby_id].game.player2Choice
+                            });
+                        }
+                        lobbies[data.lobby_id].game["player1Choice"] = '';
+                        lobbies[data.lobby_id].game["player2Choice"] = '';
+                    }   
+                    // console.log(lobbies[data.lobby_id]);
                 }
             });
         });
@@ -157,6 +251,40 @@ module.exports = class SocketIO {
             io.to(lobbyID).emit("updateLobby", {
                 id: playerID, username, gamemode: "Guns1v1", lobby_id: lobbyID, players, join
             });
+        }
+
+        function updateGame(data, player2Win) {
+            let winner = lobbies[data.lobby_id].game.player1;
+            if (player2Win) {
+                winner = lobbies[data.lobby_id].game.player2;                                
+            }
+            lobbies[data.lobby_id].winnerDetected(winner);                            
+            let player1Online = false;
+            let player2Online = false;
+            let fighters;
+
+            while (!player1Online || !player2Online) {
+                player1Online = false;
+                player2Online = false;
+                let status = lobbies[data.lobby_id].nextPlayers();
+                fighters = lobbies[data.lobby_id].assignPlayers();
+                if (players[lobbies[data.lobby_id].game.player1]) {
+                    player1Online = true;
+                }
+                if (players[lobbies[data.lobby_id].game.player2]) {
+                    player2Online = true;
+                }
+                if ((!player1Online || !player2Online) && status == "lastQueue") {
+                    break;
+                }
+            }
+
+            if (fighters.player1 && fighters.player2) {
+                io.to(players[data.id].game.lobby_id).emit('gameNew', fighters, {winner: lobbies[data.lobby_id].game.player1});
+            }
+            else {
+                io.to(players[data.id].game.lobby_id).emit('gameEnd', {players: lobbies[data.lobby_id].players});
+            }
         }
     }
 }

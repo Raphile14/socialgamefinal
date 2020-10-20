@@ -8,7 +8,7 @@ body {
     margin: 0;
     text-align: center;
     height: 100%;
-    padding-top: 120px;
+    /* padding-top: 120px; */
     box-sizing: border-box;
     -webkit-animation: slide 30s linear infinite;
     color: #b29c44;
@@ -16,6 +16,17 @@ body {
 
 #tutorial {
     color: #ffe062;
+}
+
+hr.style1{
+    border-top: 1.5px dashed #8c8b8b;
+	border-bottom: 1.5px dashed #fff;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+h3 {
+    font-size: medium;
 }
 
 @-webkit-keyframes slide {
@@ -32,8 +43,15 @@ button, #submitUsername {
     background-color: #ffe062;
 }
 
+button.action {
+    background-color: transparent;
+    border-color: transparent;
+}
+
 /* Hide Elements Except Login on First Load */
-#sectionMenu, #sectionLobby, #gameArea {
+#sectionMenu, #sectionLobby, #gameArea, #choices, #scoreArea, 
+#charge1, #pistol1, #d_pistol1, #block1, #counter1, #evade1,
+#charge2, #pistol2, #d_pistol2, #block2, #counter2, #evade2 {
     display: none;
 }
 
@@ -63,18 +81,36 @@ button, #submitUsername {
 /* Media Queries */
 /* Desktop Version */
 @media (min-width: 992px) {
-
+    img.action {
+        max-height: 70px;
+    }
+    div#player1Action, div#player2Action {
+        max-height: 70px;
+        height: 70px;
+    }
 }
 
 /* Tablet Version */
 @media (min-width: 768px) and (max-width: 991px) {
-
+    img.action {
+        max-height: 70px;
+    }
+    div#player1Action, div#player2Action {
+        max-height: 70px;
+        height: 70px;
+    }
 }
 
 
 /* Mobile Version */
 @media (max-width: 767px) {
-
+    img.action {
+        max-height: 50px;
+    }
+    div#player1Action, div#player2Action {
+        max-height: 50px;
+        height: 50px;
+    }
 }
 
 /* Animation */
