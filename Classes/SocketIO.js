@@ -18,7 +18,7 @@ let Utility = new utility(lobbies, players);
 
 // Game Logic
 let pistolDefeats = ["charge", "counter"];
-let dPistolDefeats = ["charge", "pistol", "counter", "evade"];
+let dPistolDefeats = ["charge", "pistol", "counter"];
 let counterDefeats = ["block"];
 
 module.exports = class SocketIO {
@@ -112,6 +112,9 @@ module.exports = class SocketIO {
                 if (!lobbies[data.id]) {
                     socket.emit('joinLobbyFail');
                 }
+                else if (lobbies[data.id].players.length >= 10) {
+                    socket.emit('joinLobbyFailFull');
+                }
                 else {
                     if (!lobbies[data.id].game.ongoing) {
                         lobbies[data.id].addPlayer({id: playerID, username: players[playerID].username, score: 0});
@@ -156,7 +159,8 @@ module.exports = class SocketIO {
                     }
                     else {
                         lobbies[data.lobby_id].game.ongoing = true;
-                        await lobbies[data.lobby_id].generateQueue();
+                        await lobbies[data.lobby_id].clearQueue();
+                        await lobbies[data.lobby_id].generateQueue();                        
                         let fighters = await lobbies[data.lobby_id].assignPlayers();
                         io.to(players[data.id].game.lobby_id).emit('gameStart', fighters);
                     }
@@ -280,6 +284,9 @@ module.exports = class SocketIO {
             }
 
             if (fighters.player1 && fighters.player2) {
+                console.log(lobbies[data.lobby_id]);
+                players[data.id].game.player1Charges = 0;
+                players[data.id].game.player2Charges = 0;
                 io.to(players[data.id].game.lobby_id).emit('gameNew', fighters, {winner: lobbies[data.lobby_id].game.player1});
             }
             else {

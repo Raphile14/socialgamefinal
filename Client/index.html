@@ -21,210 +21,214 @@
         <div id="sectionLogin" class="">            
             <div class="wrapper fadeInDown">
                 <div id="formContent">      
-                    <div id="title_header" class="jumbotron text-center fadeIn first">
+                    <div class="title_header jumbotron text-center fadeIn first">
                         <h1> SPEND TIME TOGETHER </h1>
                     </div>                      
                     <!-- Login Form -->
                     <div class="loginArea">
-                        <input type="text" id="username" class="fadeIn second" name="login" placeholder="Enter Name">                                            
+                        <input type="text" id="username" class="fadeIn second" name="login" placeholder="Enter Name">                        
+                        <input id="submitUsername" type="submit" class="fadeIn second" value="ENTER">
                     </div>                    
               
                     <!-- Remind Passowrd -->
-                    <div id="formFooter">
-                        <input id="submitUsername" type="submit" class="fadeIn second" value="ENTER GAME">
-                        <!-- <a class="underlineHover fadeIn third" href="#"> How to Play </a> -->
+                    <div class="formFooter">                        
+                        Players Online: <span id="player_count"> 0 </span>
                     </div>              
                 </div>
             </div>            
         </div>
 
         <!-- JOIN CREATE SECTION -->
-        <div id="sectionMenu">
-            <div class="jumbotron text-center fadeIn first">
-                <h1> Welcome, <span id="client_name"> </span>! </h1>
-            </div>   
-            <div class="container">
-                <div class="row justify-content-center fadeIn second">
-                    <div class="col-lg-4 justify-content-center rounded text-secondary jumbotron">
-                        <div>
-                            <p> Change Name </p>
-                        </div>                        
-                        <input id="changeUsername" type="text" class="input" value=""/>
-                        <button id="changeButton" type="button"> Change </button>
-                    </div>
-                    <div class="col-lg-4 justify-content-center rounded text-secondary jumbotron">
+        <div id="sectionMenu" class="">            
+            <div class="wrapper fadeInDown">
+                <div id="formContent">      
+                    <div class="title_header jumbotron text-center fadeIn first">
+                        <h1> Welcome, <span id="client_name"> </span>! </h1>
+                    </div>                      
+
+                    <div class="loginArea">
+                        <p> Change Name </p>            
+                        <input id="changeUsername" type="text" class="input" value="" placeholder="Enter Name"/>
+                        <button id="changeButton" type="button" class="menu"> CHANGE </button>
+                        <hr class="style1">                         
                         <p> Join a Game </p>
-                        <input id="joinCode" type="text" class="input" value="" placeholder="code of lobby" required/>
-                        <button id="joinCodeButton" type="button"> Enter </button>
-                    </div>
-                    <div class="col-lg-4 justify-content-center rounded text-secondary jumbotron">
+                        <input id="joinCode" type="text" class="input" value="" placeholder="Code of Lobby" required/>
+                        <button id="joinCodeButton" type="button" class="menu"> ENTER </button>                                    
+                    </div>                    
+              
+                    <div class="formFooter">
                         <p> Create a Game </p>            
-                        <button id="createGuns1v1Button" type="button"> Guns1v1 </button>  
-                    </div>
-                </div>                
-            </div>         
-        </div>
+                        <button id="createGuns1v1Button" type="button" class="menu"> Guns1v1 </button>  
+                    </div>              
+                </div>
+            </div>            
+        </div>        
 
         <!-- LOBBY SECTION -->
-        <div id="sectionLobby">
-            <div id="lobbyHeader" class="bg-dark text-center fadeIn first">
-                <h1 id="lobbyGameMode"> </h1>
-            </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-6 col-sm-6 col-md-6 col-lg-6">                    
-                        <div id="lobbyControls" class="bg-light text-left container fadeIn second">
-                            <p> Code: <span id="lobbyCode"> </span> <span id="copyNotif"> </span> </p> 
-                            <button id="lobbyCopy" type="button"> Copy Code </button>
-                            <button id="lobbyStart" type="button"> Start Game </button>
-                            <p id="lobbyPlayerList"> </p>
-                            <button id="lobbyLeave" type="button"> Leave Lobby </button>
-                        </div> 
-
-                        <div id="scoreArea" class="text-center">
-                            <h2> Scores </h2>
-                            <hr class="style1">
-                            <div id="scores">
-
-                            </div>
-                            <button id="scoreLeave" type="button"> Leave Lobby </button>
-                        </div>
-
-                        <div id="gameArea" class="bg-light text-center container fadeIn second">
-                            <h2> Game Area </h2>
-                            <hr class="style1">
-
-                            <h3 id="player1">  </h3>
-                            <br>
-                            <div id="player1Action">
-                                <div class="container text-center">
-                                    <div class="">
-                                        <div id="charge1" class="text-center">
-                                            <img class="action" src="./images/actions/charge.png" alt="">                                       
-                                        </div>
-                                        <div id="pistol1" class="text-center">
-                                            <img class="action" src="./images/actions/pistol.png" alt="">
-                                        </div>
-                                        <div id="d_pistol1" class="text-center">
-                                            <img class="action" src="./images/actions/double_pistol.png" alt="">
-                                        </div>
-                                        <div id="block1" class="text-center">
-                                            <img class="action" src="./images/actions/block.png" alt="">
-                                        </div>
-                                        <div id="counter1" class="text-center">
-                                            <img class="action" src="./images/actions/counter.png" alt="">
-                                        </div>
-                                        <div id="evade1" class="text-center">
-                                            <img class="action" src="./images/actions/evade.png" alt="">
-                                        </div>
-                                    </div>
-                                </div>                                
-                            </div>
-
-                            <br>
-
-                            <p id="status">  </p>
-
-                            <br>
-
-                            <div id="player2Action">
-                                <div class="container text-center">
+        <div id="sectionLobby" class="">            
+            <div class="wrapper fadeInDown">
+                <div id="formContent2">      
+                    <div class="title_header text-center fadeIn first">
+                        <h1 id="lobbyGameMode"> </h1>
+                    </div>                      
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-6">                    
+                                <div id="lobbyControls" class="text-left container fadeIn second">
                                     <div class="text-center">
-                                        <div id="charge2" class="text-center">
-                                            <img class="action" src="./images/actions/charge.png" alt="">                                       
-                                        </div>
-                                        <div id="pistol2" class="text-center">
-                                            <img class="action" src="./images/actions/pistol.png" alt="">
-                                        </div>
-                                        <div id="d_pistol2" class="text-center">
-                                            <img class="action" src="./images/actions/double_pistol.png" alt="">
-                                        </div>
-                                        <div id="block2" class="text-center">
-                                            <img class="action" src="./images/actions/block.png" alt="">
-                                        </div>
-                                        <div id="counter2" class="text-center">
-                                            <img class="action" src="./images/actions/counter.png" alt="">
-                                        </div>
-                                        <div id="evade2" class="text-center">
-                                            <img class="action" src="./images/actions/evade.png" alt="">
-                                        </div>
+                                        <h2> Lobby </h2>
+                                        <hr class="style1">
+                                    </div>    
+                                    <div class="text-center">
+                                        <button id="lobbyCopy" type="button"> Code: <span id="lobbyCode"> </span> </button>                                    
+                                        <button id="lobbyStart" type="button"> Start Game </button>
+                                        <button id="lobbyLeave" type="button"> Leave Lobby </button>
+                                    </div>                                                                                                        
+                                    <hr class="style1">
+                                    <p id="lobbyPlayerList"> </p>
+                                </div> 
+        
+                                <div id="scoreArea" class="text-center fadeIn second">
+                                    <h2> Scores </h2>
+                                    <hr class="style1">
+                                    <div class="text-center">
+                                        <button id="scoreStart" type="button"> Play Again </button>
+                                        <button id="scoreLeave" type="button"> Leave Lobby </button>
+                                    </div>                                    
+                                    <hr class="style1">
+                                    <div id="scores">
+        
+                                    </div>                                    
+                                </div>
+        
+                                <div id="gameArea" class="text-center container fadeIn second">
+                                    <h2> Game Area </h2>
+                                    <hr class="style1">
+        
+                                    <h3 id="player1">  </h3>
+                                    <br>
+                                    <div id="player1Action">
+                                        <div class="container text-center">
+                                            <div class="">
+                                                <div id="charge1" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/charge.png" alt="">                                       
+                                                </div>
+                                                <div id="block1" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/block.png" alt="">
+                                                </div>
+                                                <div id="pistol1" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/pistol.png" alt="">
+                                                </div>
+                                                <div id="counter1" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/counter.png" alt="">
+                                                </div>
+                                                <div id="d_pistol1" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/double_pistol.png" alt="">
+                                                </div>                                                                                                
+                                            </div>
+                                        </div>                                
                                     </div>
-                                </div>                                
-                            </div>
-                            <br>
-                            <h3 id="player2">  </h3>
-
-                            <br>                         
-                            <!-- Player Actions -->
-                            <div id="choices" class="container text-center">
-                                <hr class="style1">
-                                <p> Charges: <span id="playerCharges"> 0 </span> </p>
-                                <div class="row text-center">
-                                    <div id="charge" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
-                                        <button class="action">
-                                            <img class="action" src="./images/actions/charge.png" alt="">
-                                        </button>                                        
+        
+                                    <br>
+        
+                                    <p id="status">  </p>
+        
+                                    <br>
+        
+                                    <div id="player2Action">
+                                        <div class="container text-center">
+                                            <div class="text-center">
+                                                <div id="charge2" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/charge.png" alt="">                                       
+                                                </div>
+                                                <div id="block2" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/block.png" alt="">
+                                                </div>
+                                                <div id="pistol2" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/pistol.png" alt="">
+                                                </div>
+                                                <div id="counter2" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/counter.png" alt="">
+                                                </div>
+                                                <div id="d_pistol2" class="text-center fadeIn first">
+                                                    <img class="action" src="./images/actions/double_pistol.png" alt="">
+                                                </div>                                                                                                
+                                            </div>
+                                        </div>                                
                                     </div>
-                                    <div id="pistol" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
-                                        <button class="action">
-                                            <img class="action" src="./images/actions/pistol.png" alt="">
-                                        </button>
-                                    </div>
-                                    <div id="d_pistol" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
-                                        <button class="action">
-                                            <img class="action" src="./images/actions/double_pistol.png" alt="">
-                                        </button>                                        
-                                    </div>
-                                    <div id="block" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
-                                        <button class="action">
-                                            <img class="action" src="./images/actions/block.png" alt="">
-                                        </button>                                        
-                                    </div>
-                                    <div id="counter" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
-                                        <button class="action">
-                                            <img class="action" src="./images/actions/counter.png" alt="">
-                                        </button class="action">                                        
-                                    </div>
-                                    <div id="evade" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
-                                        <button class="action">
-                                            <img class="action" src="./images/actions/evade.png" alt="">
-                                        </button>                                        
+                                    <br>
+                                    <h3 id="player2">  </h3>
+        
+                                    <br>                         
+                                    <div id="choices" class="container text-center fadeIn first">
+                                        <hr class="style1">
+                                        <p> Charges: <span id="playerCharges"> 0 </span> </p>
+                                        <div class="row text-center">
+                                            <div id="charge" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                                <button class="action">
+                                                    <img class="action" src="./images/actions/charge.png" alt="">
+                                                </button>                                        
+                                            </div>
+                                            <div id="block" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                                <button class="action">
+                                                    <img class="action" src="./images/actions/block.png" alt="">
+                                                </button>                                        
+                                            </div>
+                                            <div id="pistol" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                                <button class="action">
+                                                    <img class="action" src="./images/actions/pistol.png" alt="">
+                                                </button>
+                                            </div>
+                                            <div id="counter" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                                <button class="action">
+                                                    <img class="action" src="./images/actions/counter.png" alt="">
+                                                </button class="action">                                        
+                                            </div>
+                                            <div id="d_pistol" class="col-4 col-sm-4 col-md-2 col-lg-2 text-center">
+                                                <button class="action">
+                                                    <img class="action" src="./images/actions/double_pistol.png" alt="">
+                                                </button>                                        
+                                            </div>                                                                                        
+                                        </div>
+        
                                     </div>
                                 </div>
-
                             </div>
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 fadeIn third">
+                                <h2> Chat </h2>
+                                <div id="chatArea" class="text-left"> </div>
+                                <input type="text" id="chatInput">
+                                <button id="chatInputButton" type="button"> Send </button>
+                            </div>                
                         </div>
-                    </div>
-                    <div class="bg-light col-6 col-sm-6 col-md-6 col-lg-6 fadeIn third">
-                        <h2> Lobby Chat </h2>
-                        <div id="chatArea" class="bg-primary text-left"> </div>
-                        <input type="text" id="chatInput">
-                        <button id="chatInputButton" type="button"> Send </button>
-                    </div>                
-                </div> 
-            </div>                                  
-        </div>
-        
-        <!-- INGAME SECTION -->
+                    </div>                    
+              
+                    <div class="formFooter">
+                        <a id="tutorial" href="#"> How to Play </a>
+                    </div>              
+                </div>
+            </div>            
+        </div>           
 
         <!-- FOOTER SECTION -->
-        <div id="footer" class="fixed-bottom container fadeIn fourth">   
+        <!-- <div id="footer" class="fixed-bottom container fadeIn fourth">   
             <div class="row">
-                <div class="col-lg-4 text-left">
+                <div class="col-lg-4 text-center">
                     Players Online: <span id="player_count"> 0 </span>
                 </div>
                 <div class="col-lg-4 text-center">
                     <a id="tutorial" class="underlineHover" href="#"> How to Play </a>
                 </div>   
-                <div class="col-lg-4 text-right">
+                <div class="col-lg-4 text-center">
                     Created by: DDFL
                 </div>
             </div>                     
-        </div>
+        </div> -->
 
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+        <script src="https://code.jquery.com/jquery-3.5.1.js"> </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>

@@ -11,7 +11,6 @@ function player1Show(a) {
     $("#d_pistol1").hide();
     $("#block1").hide();
     $("#counter1").hide();
-    $("#evade1").hide();
     $(action).show();
 }
 
@@ -22,7 +21,6 @@ function player2Show(a) {
     $("#d_pistol2").hide();
     $("#block2").hide();
     $("#counter2").hide();
-    $("#evade2").hide();
     $(action).show();
 }
 
@@ -32,11 +30,9 @@ function hidePast() {
     $("#d_pistol1").hide();
     $("#block1").hide();
     $("#counter1").hide();
-    $("#evade1").hide();
     $("#charge2").hide();
     $("#pistol2").hide();
     $("#d_pistol2").hide();
     $("#block2").hide();
     $("#counter2").hide();
-    $("#evade2").hide();
 }

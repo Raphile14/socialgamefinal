@@ -8,6 +8,13 @@ let player1Code = '';
 let player2Code = '';
 
 $(document).ready(() => {
+    // Bind enter to chat input
+    $("#chatInput").keypress((event)=>{
+        let keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == '13'){
+            sendMessage();
+        }
+    });
     // Enter Name Button
     $("#submitUsername").click(() => {
         changeName("#username");
@@ -23,7 +30,7 @@ $(document).ready(() => {
         $temp.val($("#lobbyCode").text()).select();
         document.execCommand("copy");
         $temp.remove();
-        $("#copyNotif").text("Code Copied Successfully!");
+        $("#lobbyCopy").css("border-color","green");
     });
     // Create Lobby Button
     $("#createGuns1v1Button").click(() => {
@@ -44,13 +51,23 @@ $(document).ready(() => {
             }
             else if ($("#joinCode").val().length == 0) {
                 $("#joinCode").attr("placeholder", "Please enter a code!");
-            }            
+            }
+            else {
+                $("#joinCode").css("border-color","gray");
+                $("#joinCode").attr("placeholder", "Code of Lobby");
+            }         
         }
     });
     // Leave Lobby
     $("#lobbyLeave").click(() => {
         if (players[player_id].game.ingame) {
             socket.emit('leaveLobby', players[player_id]);
+        }        
+    });
+    // Start Game From Score
+    $("#scoreStart").click(()=>{
+        if (players[player_id].game.ingame && players[player_id].game.lobby_id != '') {            
+            socket.emit('lobbyStart', {id: player_id, lobby_id: players[player_id].game.lobby_id});
         }        
     });
     $("#scoreLeave").click(() => {
@@ -60,15 +77,7 @@ $(document).ready(() => {
     });
     // Send Chat Message
     $("#chatInputButton").click(() => {
-        if (players[player_id].game.ingame && players[player_id].game.lobby_id != '') {
-            if ($("#chatInput").val().length > 0) {
-                socket.emit('sendChatMessage', {id: player_id, message: $("#chatInput").val()});                
-            }         
-            else {
-                $("#chatInput").attr("placeholder", "Please enter a message!");
-            }   
-            $("#chatInput").val('');
-        }
+        sendMessage();
     });
     // Start Game
     $("#lobbyStart").click(()=>{
@@ -92,9 +101,6 @@ $(document).ready(() => {
     });
     $("#counter").click(()=>{
         sendChoice('counter');
-    });
-    $("#evade").click(()=>{
-        sendChoice('evade');
     });
 });
 
@@ -142,7 +148,9 @@ socket.on('createLobbySuccess', (data) => {
     }
     playerNames += "</ul> </p>";
     $("#lobbyPlayerList").append(playerNames);
-    show("#sectionLobby", "#sectionMenu");
+    $("#scoreArea").hide();
+    $("#lobbyControls").show();
+    show("#sectionLobby", "#sectionMenu");    
 });
 
 // Receive Player Status Update from server
@@ -153,10 +161,10 @@ socket.on('updatePlayer', (data) => {
 // Update lobby
 socket.on('updateLobby', (data) => { 
     if (data.join) {
-        $("#chatArea").append('<p class="message"> ' + data.username + " joined the game! </p>");
+        addMessage(data.username + " joined the game!");
     }
     else if (!data.join) {
-        $("#chatArea").append('<p class="message"> ' + players[data.id].username + " left the game! </p>");
+        addMessage(players[data.id].username + " left the game!");
     }
     delete players[data.id];
     $("#lobbyPlayerList").html('');
@@ -181,14 +189,22 @@ socket.on('leaveLobbyConfirmed', () => {
 // Join Lobby Success
 socket.on('joinLobbySuccess', () => {
     $("#joinCode").val("");
-    $("#joinCode").css("border-color","green");   
-    show("#sectionLobby", "#sectionMenu");
+    $("#joinCode").css("border-color","green"); 
+    $("#scoreArea").hide();  
+    $("#lobbyControls").show();
+    show("#sectionLobby", "#sectionMenu");    
 });
 
 // Join Lobby Fail
 socket.on('joinLobbyFail', () => {
     $("#joinCode").val("");    
     $("#joinCode").attr("placeholder", "Lobby does not exist!");
+});
+
+// Join Lobby Fail Full
+socket.on('joinLobbyFailFull', () => {
+    $("#joinCode").val("");    
+    $("#joinCode").attr("placeholder", "Lobby is already full!");
 });
 
 // Game Ongoing
@@ -199,40 +215,27 @@ socket.on('gameOngoing', () => {
 
 // Receive a chat message
 socket.on('receiveChatMessage', (data) => {
-    let $p = $('<p>').text(data.sender + ": " + data.message);
-    $p.addClass("message");
-    $("#chatArea").append($p);
-    // $("#chatArea").animate({ scrollTop: $('#chatArea').prop("scrollHeight")}, 1000);    
+    addMessage(data.sender + ": " + data.message);
 });
 
 // Fail Start of Game
 socket.on('lobbyStartFail', ()=>{
-    let $p = $('<p>').text("Failed to start game! Need 2 or more players!");
-    $p.addClass("message");
-    $("#chatArea").append($p);
+    addMessage("Failed to start game! Need 2 or more players!")
 });
 
 // Invalid Action
 socket.on('invalidAction', ()=>{
-    let $p = $('<p>').text("Invalid Action! Lacking Charges. Choose another one!");
-    $p.addClass("message");
-    $p.css('color', 'red');
-    $("#chatArea").append($p);
+    addMessage("Invalid Action! Lacking Charges. Choose another one!")
 });
 
 // Already Chosen
 socket.on('alreadyChosen', ()=>{
-    let $p = $('<p>').text("You already chose an action!");
-    $p.addClass("message");
-    $p.css('color', 'red');
-    $("#chatArea").append($p);
+    addMessage("You already chose an action!");
 });
 
 // Valid Action
 socket.on('validAction', (data)=>{
-    let $p = $('<p>').text("UPDATE: " + players[data.id].username + " has chosen an action!");
-    $p.addClass("message");
-    $("#chatArea").append($p);
+    addMessage("UPDATE: " + players[data.id].username + " has chosen an action!")
     if (player1Code == data.id) {
         $("#player1").css('color', 'green');
     }
@@ -262,7 +265,7 @@ socket.on('gameEnd', (data)=> {
     $("#gameArea").hide();
     for (let x = 0; x < data.players.length; x++) {
         let $w = $('<p>').text((x + 1) + ".) " + data.players[x].username + " (" + data.players[x].score + ")");
-        $w.addClass("message");
+        $w.addClass("message2");
         $("#scores").append($w);
     }
 });
@@ -271,20 +274,11 @@ socket.on('gameEnd', (data)=> {
 socket.on('gameNew', (data, winner)=> {
     let player1 = data.player1;
     let player2 = data.player2;
+    $("#playerCharges").text("0");
 
-    let $w = $('<p>').text("UPDATE: " + players[winner.winner].username + " won the round!");
-    $w.addClass("message");
-    $w.css('color', 'green');
-    $("#chatArea").append($w);
-
-    let $p = $('<p>').text("UPDATE: A new round is starting!");
-    $p.addClass("message");
-    $("#chatArea").append($p);
-
-    $p = $('<p>').text(players[player1].username + " vs " + players[player2].username);
-    $p.addClass("message");
-    $p.css('color', 'green');
-    $("#chatArea").append($p);
+    addMessage("UPDATE: " + players[winner.winner].username + " won the round!");
+    addMessage("UPDATE: A new round is starting!");
+    addMessage(players[player1].username + " vs " + players[player2].username);
 
     // Show the choices
     $("#choices").hide();
@@ -320,17 +314,18 @@ socket.on('gameNew', (data, winner)=> {
 socket.on('gameStart', (data)=> {
     let player1 = data.player1;
     let player2 = data.player2;
+    $("#player1").css('color', '#b29c44');
+    $("#player2").css('color', '#b29c44');
+    hidePast();
+    $("#status").text("VS");    
+    $("#scores").empty();
+    $("#playerCharges").text("0");
+    $("#scoreArea").hide();
 
     // Show game area
-    let $p = $('<p>').text("UPDATE: Game is starting!");
-    $p.addClass("message");
-    $("#chatArea").append($p);
+    addMessage("UPDATE: Game is starting!");
     show("#gameArea", "#lobbyControls");
-
-    $p = $('<p>').text(players[player1].username + " vs " + players[player2].username);
-    $p.addClass("message");
-    $p.css('color', 'green');
-    $("#chatArea").append($p);
+    addMessage(players[player1].username + " vs " + players[player2].username);
     
     // If the client is one of the players of the current round
     // Show the choices
@@ -367,17 +362,40 @@ socket.on('gameStart', (data)=> {
 function changeName (field) {
     let inputName = $(field);
     if (inputName.val().length == 0) {
-        inputName.val("");
         inputName.attr("placeholder", "Please Input a Name!");
         inputName.css("border-color","red");
     }
     else if (inputName.val().length < 3) {
-        inputName.val("");
         inputName.attr("placeholder", "Name Too Short!");
         inputName.css("border-color","red");
     }
+    else if (inputName.val().length > 10) {        
+        inputName.attr("placeholder", "Name Too Long!");
+        inputName.css("border-color","red");
+    }
     else {
+        inputName.attr("placeholder", "Enter Name");
         inputName.css("border-color","green");
         socket.emit('changeUsername', {id: player_id, username: inputName.val()});
+    }
+    inputName.val("");
+}
+
+function addMessage(message) {
+    let $p = $('<p>').text(message);
+    $p.addClass("message");
+    $("#chatArea").append($p);
+    $('#chatArea').animate({scrollTop: $('#chatArea')[0].scrollHeight}, "slow");
+}
+
+function sendMessage() {
+    if (players[player_id].game.ingame && players[player_id].game.lobby_id != '') {
+        if ($("#chatInput").val().length > 0) {
+            socket.emit('sendChatMessage', {id: player_id, message: $("#chatInput").val()});                
+        }         
+        else {
+            $("#chatInput").attr("placeholder", "Please enter a message!");
+        }   
+        $("#chatInput").val('');
     }
 }

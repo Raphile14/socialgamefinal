@@ -3,7 +3,34 @@
 # Description
 Spend Time Together is a group project in fulfilling a course final test for Software Engineering and Integrative Programming. The main goal of this project is to create a system that supports cross-platform compatability and provide an app for older adults to enjoy!
 
+# Bugs Found
+- Winner wrong name bug
+
+# Needed Features
+- Kick feature
+- 5 second timer after a round
+- Add increments to names with same string value
+- Hover on buttons
+- Wins and Loses
+
 # Changelog
+indev 3.0.0 (10/21/2020)
+- Limit character name to max 10
+- Code Optimization
+- UI Overhaul
+- Play Again Button
+- Chat area different color for messages
+- Smoother transition when actions are shown on screen
+- Set Limit of lobbies to 10 players
+- Removed Evade Action
+- Send a chat message on pressing Enter button
+
+Bug Fixes
+- Reset Charges to Client after a game
+- UI Bug when joining a game after finishing a game
+- Chat window scrolls down when receiving a message
+- Bugs with action buttons when clicking
+
 indev 2.0.0 (10/20/2020)
 - Main functionality done
 - Testing will commence

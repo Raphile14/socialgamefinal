@@ -4,18 +4,25 @@ body {
     font-family: 'Josefin Sans', sans-serif;
     background-image: url("../images/bg_mainmenu.png");
     background-repeat: 0 0;
-    width: 100%;
-    margin: 0;
+    /* width: 100%; */
+    /* margin: 0; */
     text-align: center;
-    height: 100%;
+    /* height: 100%; */
     /* padding-top: 120px; */
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
     -webkit-animation: slide 30s linear infinite;
     color: #b29c44;
 }
 
+/* Section Login */
+div#sectionLogin {
+    width: 100%;
+    /* height: 100vh; */
+    transform: translateY(15%);
+}
+
 #tutorial {
-    color: #ffe062;
+    color: #b29c44;
 }
 
 hr.style1{
@@ -31,16 +38,21 @@ h3 {
 
 @-webkit-keyframes slide {
     from { background-position: 0 0; }
-    to { background-position: -1200px 0; }
+    to { background-position: -1920px 0; }
 }
 
-#title_header {
+.title_header {
     background-color: #161645;
     color: #ffe062;
 }
 
 button, #submitUsername {
     background-color: #ffe062;
+}
+
+button.menu {
+    width: 100px;
+    max-width: 100px;
 }
 
 button.action {
@@ -70,12 +82,21 @@ button.action {
     margin-top: 20px;
     margin-bottom: 20px;
 }
-
+.message2 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
 .message {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.message:nth-child(odd) {
+    background-color: #8c8b8b;
+    color: white;
 }
 
 /* Media Queries */
@@ -88,6 +109,10 @@ button.action {
         max-height: 70px;
         height: 70px;
     }
+    #formContent2 {
+        width: 90%;
+        max-width: 90%;
+    }
 }
 
 /* Tablet Version */
@@ -98,6 +123,10 @@ button.action {
     div#player1Action, div#player2Action {
         max-height: 70px;
         height: 70px;
+    }
+    #formContent2 {
+        width: 90%;
+        max-width: 90%;
     }
 }
 
@@ -111,6 +140,10 @@ button.action {
         max-height: 50px;
         height: 50px;
     }
+    #formContent2 {
+        width: 100%;
+        max-width: 100%;
+    }
 }
 
 /* Animation */
@@ -119,13 +152,10 @@ button.action {
     align-items: center;
     flex-direction: column; 
     justify-content: center;
-    width: 100%;
-    min-height: 100%;
     padding: 20px;
-    margin: 20px;
 }
 
-#formContent {
+#formContent {    
     -webkit-border-radius: 10px 10px 10px 10px;
     border-radius: 25px 25px 25px 25px;
     background: #fff;
@@ -139,7 +169,17 @@ button.action {
     text-align: center;
 }
 
-#formFooter {
+#formContent2 {    
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 25px 25px 25px 25px;
+    background: #fff;
+    position: relative;
+    -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.formFooter {
     background-color: #f6f6f6;
     border-top: 1px solid #dce8f1;
     padding: 25px;
@@ -231,7 +271,7 @@ button.action {
 }
   
 /* Simple CSS3 Fade-in Animation */
-.underlineHover:after {
+/* .underlineHover:after {
     display: block;
     left: 0;
     bottom: -10px;
@@ -248,5 +288,5 @@ button.action {
   
 .underlineHover:hover:after{
     width: 100%;
-}
+} */
 

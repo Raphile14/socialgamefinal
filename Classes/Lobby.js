@@ -42,7 +42,6 @@ module.exports = class Lobby {
             queuedPeople.push(currentPlayer);
             currentRound++;         
         }
-        console.log(this.game.queue)
     }
     assignPlayers() {    
         this.game.player1 = this.game.queue[this.game.round].player;
@@ -79,5 +78,10 @@ module.exports = class Lobby {
             return "lastQueue";
         }
         return "Ongoing";
+    }
+    clearQueue() {
+        this.game.round = 0;
+        this.game.index = 0;
+        this.game.queue = [];
     }
 }
