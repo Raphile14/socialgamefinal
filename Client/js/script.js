@@ -89,18 +89,23 @@ $(document).ready(() => {
     // Send Charge
     $("#charge").click(()=>{
         sendChoice('charge');
+        player2Show('charge');
     });
     $("#pistol").click(()=>{
         sendChoice('pistol');
+        player2Show('pistol');
     });
     $("#d_pistol").click(()=>{
         sendChoice('d_pistol');
+        player2Show('d_pistol');
     });
     $("#block").click(()=>{
         sendChoice('block');
+        player2Show('block');
     });
     $("#counter").click(()=>{
         sendChoice('counter');
+        player2Show('counter');
     });
 });
 
@@ -246,16 +251,7 @@ socket.on('validAction', (data)=>{
 
 // Continuing Round
 socket.on('gameContinue', (data)=> {
-    if (player2Code == player_id && data.player1 == player_id) {
-        $("#playerCharges").text(data.player1Charges);
-    }
-    else if (player2Code == player_id && data.player2 == player_id) {
-        $("#playerCharges").text(data.player2Charges);
-    }
-    player1Show(data.player1Choice);
-    player2Show(data.player2Choice);
-    $("#player1").css('color', '#b29c44');
-    $("#player2").css('color', '#b29c44');
+    updateCurrent(data);
     $("#status").text("DRAW");    
 });
 
@@ -270,13 +266,20 @@ socket.on('gameEnd', (data)=> {
     }
 });
 
+// Show round review
+socket.on('gameReview', (winner, data) => {
+    addMessage("UPDATE: " + players[winner.winner].username + " won the round!");
+    $("#choices").hide();
+    updateCurrent(data);
+    $("#status").text(players[winner.winner].username + " won the round!"); 
+})
+
 // New Round
-socket.on('gameNew', (data, winner)=> {
+socket.on('gameNew', (data)=> {
     let player1 = data.player1;
     let player2 = data.player2;
     $("#playerCharges").text("0");
-
-    addMessage("UPDATE: " + players[winner.winner].username + " won the round!");
+    
     addMessage("UPDATE: A new round is starting!");
     addMessage(players[player1].username + " vs " + players[player2].username);
 
@@ -356,6 +359,11 @@ socket.on('gameStart', (data)=> {
     $("#player2").css('color', '#b29c44');
 });
 
+// Receving Countdown Timer
+socket.on('counter', (data) => {
+    $("#timer").text(data);
+});
+
 ////////////////////////////////////////
 // Helper Functions
 ////////////////////////////////////////
@@ -391,11 +399,30 @@ function addMessage(message) {
 function sendMessage() {
     if (players[player_id].game.ingame && players[player_id].game.lobby_id != '') {
         if ($("#chatInput").val().length > 0) {
-            socket.emit('sendChatMessage', {id: player_id, message: $("#chatInput").val()});                
+            socket.emit('sendChatMessage', {id: player_id, message: $("#chatInput").val()});                            
         }         
         else {
             $("#chatInput").attr("placeholder", "Please enter a message!");
         }   
         $("#chatInput").val('');
     }
+}
+
+function updateCurrent(data) {
+    if (player2Code == player_id && data.player1 == player_id) {
+        $("#playerCharges").text(data.player1Charges);
+        player1Show(data.player2Choice);
+        player2Show(data.player1Choice);
+    }
+    else if (player2Code == player_id && data.player2 == player_id) {
+        $("#playerCharges").text(data.player2Charges);
+        player1Show(data.player1Choice);
+        player2Show(data.player2Choice);
+    }
+    else {
+        player1Show(data.player1Choice);
+        player2Show(data.player2Choice);
+    }    
+    $("#player1").css('color', '#b29c44');
+    $("#player2").css('color', '#b29c44');
 }

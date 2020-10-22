@@ -4,16 +4,27 @@
 Spend Time Together is a group project in fulfilling a course final test for Software Engineering and Integrative Programming. The main goal of this project is to create a system that supports cross-platform compatability and provide an app for older adults to enjoy!
 
 # Bugs Found
-- Winner wrong name bug
+-
 
 # Needed Features
 - Kick feature
-- 5 second timer after a round
 - Add increments to names with same string value
 - Hover on buttons
 - Wins and Loses
+- Sound effects after click
+
 
 # Changelog
+indev 3.1.0 (10/22/2020)
+- 10 second timer after a round is finished
+- 5 Second timer when choosing an action during a round
+- Show action on client side after click
+
+Bug Fixes
+- Choices are shown on the wrong place
+- Winner message displaying the wrong name
+- Round status now shown on spectators
+
 indev 3.0.0 (10/21/2020)
 - Limit character name to max 10
 - Code Optimization

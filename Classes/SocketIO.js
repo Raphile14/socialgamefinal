@@ -26,6 +26,10 @@ module.exports = class SocketIO {
         // this.io = require('socket.io')(server);
         const io = new Server(server);
 
+        // Counter
+        let reviewCountdown;
+        let counter = 5;
+
         // Socket.IO Connection
         io.on('connection', function(socket){
             // Instantiate Player
@@ -60,10 +64,10 @@ module.exports = class SocketIO {
                 if (players[playerID].game.ingame) {    
                     if (lobbies[lobbyID].game.player1 == playerID || lobbies[lobbyID].game.player2 == playerID) {
                         if (lobbies[lobbyID].game.player1 == playerID) {
-                            updateGame({id: playerID, lobby_id: lobbyID, choice: ''}, true);
+                            updateGame({id: playerID, lobby_id: lobbyID, choice: ''}, true, socket);
                         }
                         else {
-                            updateGame({id: playerID, lobby_id: lobbyID, choice: ''}, false);
+                            updateGame({id: playerID, lobby_id: lobbyID, choice: ''}, false, socket);
                         }
                     }        
                     Utility.removeUser(lobbies[players[playerID].game.lobby_id], playerID, socket);         
@@ -163,88 +167,15 @@ module.exports = class SocketIO {
                         await lobbies[data.lobby_id].generateQueue();                        
                         let fighters = await lobbies[data.lobby_id].assignPlayers();
                         io.to(players[data.id].game.lobby_id).emit('gameStart', fighters);
+                        countdownAction(data.lobby_id, socket);
                     }
                 }
             });
 
             // Receiving choices
-            socket.on('playerChoice', async(data)=> {
-                let valid = false;
-                let player = '';
-                if (lobbies[data.lobby_id]) {
-                    if (lobbies[data.lobby_id].game.player1 == data.id) {
-                        player = "player1";
-                    }
-                    else if (lobbies[data.lobby_id].game.player2 == data.id) {
-                        player = "player2";
-                    }
-                    // Update choices and checking of charges
-                    if (player != '' && lobbies[data.lobby_id].game[player+"Choice"] == '') {
-                        if (data.choice == 'charge') {
-                            lobbies[data.lobby_id].game[player+"Charges"] += 1;
-                            valid = true;
-                        }
-                        else if ((data.choice == 'pistol' || data.choice == 'counter') && lobbies[data.lobby_id].game[player+"Charges"] > 0) {
-                            lobbies[data.lobby_id].game[player+"Charges"] -= 1;
-                            valid = true;                      
-                        }
-                        else if (data.choice == 'd_pistol' && lobbies[data.lobby_id].game[player+"Charges"] > 1) {
-                            lobbies[data.lobby_id].game[player+"Charges"] -= 2;
-                            valid = true;                      
-                        }
-                        else if (data.choice == "block" || data.choice == "evade") {
-                            valid = true;
-                        }
-                        if (valid) {
-                            lobbies[data.lobby_id].game[player+"Choice"] = data.choice;
-                        }                        
-                    }
-                    if (valid) {
-                        io.to(data.lobby_id).emit('validAction', {id: data.id});
-                    }
-                    else {
-                        if (player != '' && lobbies[data.lobby_id].game[player+"Choice"] != '') {
-                            socket.emit('alreadyChosen');
-                        }
-                        else {
-                            socket.emit('invalidAction');
-                        }                        
-                    }
-                    // Check if both players have chosen actions and validate who wins or continue game
-                    if (lobbies[data.lobby_id].game["player1Choice"] != '' && lobbies[data.lobby_id].game["player2Choice"] != '') {
-                        let player1chosen = lobbies[data.lobby_id].game["player1Choice"];
-                        let player2chosen = lobbies[data.lobby_id].game["player2Choice"];
-                        let player1Win = false;
-                        let player2Win = false;
-                        if ((player1chosen == "pistol" && pistolDefeats.includes(player2chosen)) 
-                        || (player1chosen == "d_pistol" && dPistolDefeats.includes(player2chosen)) 
-                        || (player1chosen == "counter" && counterDefeats.includes(player2chosen))) {
-                            player1Win = true;
-                        }
-                        else if ((player2chosen == "pistol" && pistolDefeats.includes(player1chosen)) 
-                        || (player2chosen == "d_pistol" && dPistolDefeats.includes(player1chosen)) 
-                        || (player2chosen == "counter" && counterDefeats.includes(player1chosen))) {
-                            player2Win = true;
-                        }
-                        if (player1Win || player2Win) {
-                            updateGame(data, player2Win);
-                        }
-                        else {
-                            io.to(data.lobby_id).emit('gameContinue', {
-                                player1: lobbies[data.lobby_id].game.player1, 
-                                player1Charges: lobbies[data.lobby_id].game.player1Charges,
-                                player1Choice: lobbies[data.lobby_id].game.player1Choice,
-                                player2: lobbies[data.lobby_id].game.player2,
-                                player2Charges: lobbies[data.lobby_id].game.player2Charges,
-                                player2Choice: lobbies[data.lobby_id].game.player2Choice
-                            });
-                        }
-                        lobbies[data.lobby_id].game["player1Choice"] = '';
-                        lobbies[data.lobby_id].game["player2Choice"] = '';
-                    }   
-                    // console.log(lobbies[data.lobby_id]);
-                }
-            });
+            socket.on('playerChoice', (data) => {
+                playerChoiceAuto(data, socket);
+            }); 
         });
 
         ////////////////////////////////////////
@@ -257,7 +188,7 @@ module.exports = class SocketIO {
             });
         }
 
-        function updateGame(data, player2Win) {
+        function updateGame(data, player2Win, socket) {
             let winner = lobbies[data.lobby_id].game.player1;
             if (player2Win) {
                 winner = lobbies[data.lobby_id].game.player2;                                
@@ -266,6 +197,11 @@ module.exports = class SocketIO {
             let player1Online = false;
             let player2Online = false;
             let fighters;
+
+            let player1OldName = lobbies[data.lobby_id].game.player1;
+            let player2OldName = lobbies[data.lobby_id].game.player2;
+            let player1OldAction = lobbies[data.lobby_id].game.player1Choice;
+            let player2OldAction = lobbies[data.lobby_id].game.player2Choice;
 
             while (!player1Online || !player2Online) {
                 player1Online = false;
@@ -281,17 +217,158 @@ module.exports = class SocketIO {
                 if ((!player1Online || !player2Online) && status == "lastQueue") {
                     break;
                 }
-            }
+            }            
 
             if (fighters.player1 && fighters.player2) {
-                console.log(lobbies[data.lobby_id]);
                 players[data.id].game.player1Charges = 0;
                 players[data.id].game.player2Charges = 0;
-                io.to(players[data.id].game.lobby_id).emit('gameNew', fighters, {winner: lobbies[data.lobby_id].game.player1});
+                io.to(players[data.id].game.lobby_id).emit('gameReview', {winner}, {
+                    player1: player1OldName, 
+                    player1Choice: player1OldAction,
+                    player2: player2OldName,
+                    player2Choice: player2OldAction
+                });
+                clearInterval(reviewCountdown);
+                countdown(players[data.id].game.lobby_id,
+                    function() {
+                        io.to(players[data.id].game.lobby_id).emit('gameNew', fighters);   
+                        countdownAction(data.lobby_id, socket);
+                    }
+                );                
             }
             else {
-                io.to(players[data.id].game.lobby_id).emit('gameEnd', {players: lobbies[data.lobby_id].players});
+                io.to(players[data.id].game.lobby_id).emit('gameReview', {winner}, {
+                    player1: player1OldName, 
+                    player1Choice: player1OldAction,
+                    player2: player2OldName,
+                    player2Choice: player2OldAction
+                });
+                clearInterval(reviewCountdown);
+                countdown(players[data.id].game.lobby_id,
+                    function() {
+                        io.to(players[data.id].game.lobby_id).emit('gameEnd', {players: lobbies[data.lobby_id].players});
+                    }
+                );  
+            }
+        }
+
+        // Helper Functions
+        // Countdown for review
+        function countdown(lobby_id, response) {
+            let counter = 10;
+            let endCountdown = setInterval(function(){
+                io.to(lobby_id).emit('counter', counter);
+                counter--
+                if (counter === -1) {    
+                    response();            
+                    clearInterval(endCountdown);                   
+                }
+            }, 1000);
+        }
+
+        // Countdown for actions
+        function countdownAction(lobby_id, socket) {
+            counter = 5;
+            reviewCountdown = setInterval(function(){
+                if (lobbies[lobby_id].game.player1Choice != '' && lobbies[lobby_id].game.player2Choice != '') {
+                    // lobbies[lobby_id].game.player1Choice = '';
+                    // lobbies[lobby_id].game.player2Choice = '';
+                    console.log("dito")
+                    clearInterval(reviewCountdown);
+                }
+                io.to(lobby_id).emit('counter', counter);                
+                counter--;
+                if (counter === -1) {
+                    if (lobbies[lobby_id].game.player1Choice == '') {
+                        playerChoiceAuto({id: lobbies[lobby_id].game.player1, lobby_id, choice: 'charge'}, socket);
+                    }
+                    if (lobbies[lobby_id].game.player2Choice == '') {
+                        playerChoiceAuto({id: lobbies[lobby_id].game.player2, lobby_id, choice: 'charge'}, socket);
+                    }  
+                }
+            }, 1000);
+        }
+
+        //
+        function playerChoiceAuto(data, socket) {
+            let valid = false;
+            let player = '';
+            if (lobbies[data.lobby_id]) {
+                if (lobbies[data.lobby_id].game.player1 == data.id) {
+                    player = "player1";
+                }
+                else if (lobbies[data.lobby_id].game.player2 == data.id) {
+                    player = "player2";
+                }
+                // Update choices and checking of charges
+                if (player != '' && lobbies[data.lobby_id].game[player+"Choice"] == '') {
+                    if (data.choice == 'charge') {
+                        lobbies[data.lobby_id].game[player+"Charges"] += 1;
+                        valid = true;
+                    }
+                    else if ((data.choice == 'pistol' || data.choice == 'counter') && lobbies[data.lobby_id].game[player+"Charges"] > 0) {
+                        lobbies[data.lobby_id].game[player+"Charges"] -= 1;
+                        valid = true;                      
+                    }
+                    else if (data.choice == 'd_pistol' && lobbies[data.lobby_id].game[player+"Charges"] > 1) {
+                        lobbies[data.lobby_id].game[player+"Charges"] -= 2;
+                        valid = true;                      
+                    }
+                    else if (data.choice == "block" || data.choice == "evade") {
+                        valid = true;
+                    }
+                    if (valid) {
+                        lobbies[data.lobby_id].game[player+"Choice"] = data.choice;
+                    }                        
+                }
+                if (valid) {
+                    io.to(data.lobby_id).emit('validAction', {id: data.id});
+                }
+                else {
+                    if (player != '' && lobbies[data.lobby_id].game[player+"Choice"] != '') {
+                        socket.emit('alreadyChosen');
+                    }
+                    else {
+                        socket.emit('invalidAction');
+                    }                        
+                }
+                // Check if both players have chosen actions and validate who wins or continue game
+                if (lobbies[data.lobby_id].game["player1Choice"] != '' && lobbies[data.lobby_id].game["player2Choice"] != '') {
+                    let player1chosen = lobbies[data.lobby_id].game["player1Choice"];
+                    let player2chosen = lobbies[data.lobby_id].game["player2Choice"];
+                    let player1Win = false;
+                    let player2Win = false;
+                    if ((player1chosen == "pistol" && pistolDefeats.includes(player2chosen)) 
+                    || (player1chosen == "d_pistol" && dPistolDefeats.includes(player2chosen)) 
+                    || (player1chosen == "counter" && counterDefeats.includes(player2chosen))) {
+                        player1Win = true;
+                    }
+                    else if ((player2chosen == "pistol" && pistolDefeats.includes(player1chosen)) 
+                    || (player2chosen == "d_pistol" && dPistolDefeats.includes(player1chosen)) 
+                    || (player2chosen == "counter" && counterDefeats.includes(player1chosen))) {
+                        player2Win = true;
+                    }
+                    if (player1Win || player2Win) {
+                        console.log(lobbies[data.lobby_id].players);
+                        updateGame(data, player2Win, socket);
+                    }
+                    else {
+                        clearInterval(reviewCountdown)
+                        io.to(data.lobby_id).emit('gameContinue', {
+                            player1: lobbies[data.lobby_id].game.player1, 
+                            player1Charges: lobbies[data.lobby_id].game.player1Charges,
+                            player1Choice: lobbies[data.lobby_id].game.player1Choice,
+                            player2: lobbies[data.lobby_id].game.player2,
+                            player2Charges: lobbies[data.lobby_id].game.player2Charges,
+                            player2Choice: lobbies[data.lobby_id].game.player2Choice
+                        });
+                        countdownAction(data.lobby_id, socket);                  
+                    }
+                    lobbies[data.lobby_id].game["player1Choice"] = '';
+                    lobbies[data.lobby_id].game["player2Choice"] = '';
+                }   
             }
         }
     }
+    
 }
