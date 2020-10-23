@@ -349,7 +349,7 @@ module.exports = class SocketIO {
                         player2Win = true;
                     }
                     if (player1Win || player2Win) {
-                        console.log(lobbies[data.lobby_id].players);
+                        // console.log(lobbies[data.lobby_id].players);
                         updateGame(data, player2Win, socket);
                     }
                     else {

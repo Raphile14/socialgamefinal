@@ -7,6 +7,16 @@ let player_id = '';
 let player1Code = '';
 let player2Code = '';
 
+////////////////////////////////////////
+// Audio
+////////////////////////////////////////
+let audioTick = new Audio('../audio/Tick.mp3');
+let audioRoundStart = new Audio('../audio/RoundStart.mp3');
+let audioGameFinish = new Audio('../audio/GameFinish.mp3');
+let audioPlayerStart = new Audio('../audio/GameStart.mp3');
+let audioGameContinue = new Audio('../audio/GameContinue.mp3');
+let audioGameReview = new Audio('../audio/GameReview.mp3');
+
 $(document).ready(() => {
     // Bind enter to chat input
     $("#chatInput").keypress((event)=>{
@@ -251,6 +261,9 @@ socket.on('validAction', (data)=>{
 
 // Continuing Round
 socket.on('gameContinue', (data)=> {
+    audioGameContinue.currentTime = 1;
+    audioGameContinue.volume = 0.2;
+    audioGameContinue.play();
     updateCurrent(data);
     $("#status").text("DRAW");    
 });
@@ -264,10 +277,13 @@ socket.on('gameEnd', (data)=> {
         $w.addClass("message2");
         $("#scores").append($w);
     }
+    audioGameFinish.play();
 });
 
 // Show round review
 socket.on('gameReview', (winner, data) => {
+    audioGameReview.currentTime = 1;
+    audioGameReview.play();
     addMessage("UPDATE: " + players[winner.winner].username + " won the round!");
     $("#choices").hide();
     updateCurrent(data);
@@ -275,7 +291,7 @@ socket.on('gameReview', (winner, data) => {
 })
 
 // New Round
-socket.on('gameNew', (data)=> {
+socket.on('gameNew', (data)=> {    
     let player1 = data.player1;
     let player2 = data.player2;
     $("#playerCharges").text("0");
@@ -286,7 +302,11 @@ socket.on('gameNew', (data)=> {
     // Show the choices
     $("#choices").hide();
     if (player_id == player1 || player_id == player2) {
+        audioPlayerStart.play();
         $("#choices").show();
+    }
+    else {
+        audioRoundStart.play();
     }
 
     hidePast();
@@ -315,6 +335,7 @@ socket.on('gameNew', (data)=> {
 
 // Start of a round
 socket.on('gameStart', (data)=> {
+    audioRoundStart.play();
     let player1 = data.player1;
     let player2 = data.player2;
     $("#player1").css('color', '#b29c44');
@@ -334,7 +355,11 @@ socket.on('gameStart', (data)=> {
     // Show the choices
     $("#choices").hide();
     if (player_id == player1 || player_id == player2) {
+        audioPlayerStart.play();
         $("#choices").show();
+    }
+    else {
+        audioRoundStart.play();
     }
 
     player1Code = player1;
@@ -362,6 +387,9 @@ socket.on('gameStart', (data)=> {
 // Receving Countdown Timer
 socket.on('counter', (data) => {
     $("#timer").text(data);
+    if (data == "3" || data == "2" || data == "1") {
+        audioTick.play();
+    }
 });
 
 ////////////////////////////////////////

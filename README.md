@@ -11,10 +11,12 @@ Spend Time Together is a group project in fulfilling a course final test for Sof
 - Add increments to names with same string value
 - Hover on buttons
 - Wins and Loses
-- Sound effects after click
 
 
 # Changelog
+indev 3.2.0 (10/23/2020)
+- Sound effects after certain events
+
 indev 3.1.0 (10/22/2020)
 - 10 second timer after a round is finished
 - 5 Second timer when choosing an action during a round

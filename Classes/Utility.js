@@ -30,7 +30,7 @@ module.exports = class Utility {
                 // console.log("players in lobby: ");
                 // console.log(this.lobbies[lobby.id].players)
                 // Update Player Status      
-                console.log("player length: " + this.lobbies[lobby.id].players.length);          
+                // console.log("player length: " + this.lobbies[lobby.id].players.length);          
                 socket.emit('updatePlayer', this.players[id]);
             }
         }
