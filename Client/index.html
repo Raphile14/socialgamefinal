@@ -32,7 +32,7 @@
               
                     <!-- Remind Passowrd -->
                     <div class="formFooter">                        
-                        Players Online: <span id="player_count"> 0 </span>
+                        <p id="counterPlayer"> Players Online: <span id="player_count"> 0 </span> </p>
                     </div>              
                 </div>
             </div>            
@@ -53,16 +53,133 @@
                         <hr class="style1">                         
                         <p> Join a Game </p>
                         <input id="joinCode" type="text" class="input" value="" placeholder="Code of Lobby" required/>
-                        <button id="joinCodeButton" type="button" class="menu"> ENTER </button>                                    
+                        <button id="joinCodeButton" type="button" class="menu"> ENTER </button>     
+                        <hr class="style1">
+                        <p> Create a Game </p>            
+                        <button id="createGuns1v1Button" type="button" class="menu"> GUNS1V1 </button>           
                     </div>                    
               
-                    <div class="formFooter">
-                        <p> Create a Game </p>            
-                        <button id="createGuns1v1Button" type="button" class="menu"> Guns1v1 </button>  
+                    <div class="formFooter">                        
+                        <a id="tutorial" href="#"> How to Play </a>  
                     </div>              
                 </div>
             </div>            
-        </div>        
+        </div>   
+        
+        <!-- HOW TO PLAY SECTION -->
+        <div id="informationMenu">
+            <div class="wrapper fadeInDown">
+                <div id="formContent2">
+                    <div class="title_header jumbotron text-center fadeIn first">
+                        <h1> How to Play </h1>
+                    </div>
+
+                    <div class="informationArea container">
+
+                        <!-- Charge Information -->
+                        <div id="infoCharge" class="row">
+                            <div class="col-6">
+                                <img class="actionInfo" src="./images/actions/charge.png" alt="">     
+                            </div>
+                            <div class="col-6 text-left">
+                                <p> Action Name: Charge </p>
+                                <p> Cost: Free </p>
+                                <p> Description: Gives the Player 1 Charge </p>
+                                <p> Beats: None </p>
+                                <p> Can Be Defeated by: 
+                                    <a href="#infoPistol"> <img class="actionInfoSmall" src="./images/actions/pistol.png" alt=""> </a> 
+                                    <a href="#infoDoublePistol"> <img class="actionInfoSmall" src="./images/actions/double_pistol.png" alt=""> </a> 
+                                </p> 
+                            </div>                            
+                        </div>
+                        <hr class="style1">
+
+                        <!-- Block Information -->
+                        <div id="infoBlock" class="row">
+                            <div class="col-6">
+                                <img class="actionInfo" src="./images/actions/block.png" alt="">     
+                            </div>
+                            <div class="col-6 text-left">
+                                <p> Action Name: Block </p>
+                                <p> Cost: Free </p>
+                                <p> Description: Blocks out almost every action </p>
+                                <p> Blocks: 
+                                    <a href="#infoPistol"> <img class="actionInfoSmall" src="./images/actions/pistol.png" alt=""> </a>
+                                    <a href="#infoDoublePistol"> <img class="actionInfoSmall" src="./images/actions/double_pistol.png" alt=""> </a>
+                                </p>
+                                <p> Can Be Defeated by: 
+                                    <a href="#infoCounter"> <img class="actionInfoSmall" src="./images/actions/counter.png" alt=""> </a>
+                                </p> 
+                            </div>                            
+                        </div>
+                        <hr class="style1">
+
+                        <!-- Counter Information -->
+                        <div id="infoCounter" class="row">
+                            <div class="col-6">
+                                <img class="actionInfo" src="./images/actions/counter.png" alt="">     
+                            </div>
+                            <div class="col-6 text-left">
+                                <p> Action Name: Counter </p>
+                                <p> Cost: 1 Charge </p>
+                                <p> Description: Counters a block </p>
+                                <p> Beats: 
+                                    <a href="#infoBlock"> <img class="actionInfoSmall" src="./images/actions/block.png" alt=""> </a>
+                                </p>
+                                <p> Can Be Defeated by: 
+                                    <a href="#infoPistol"> <img class="actionInfoSmall" src="./images/actions/pistol.png" alt=""> </a>
+                                    <a href="#infoDoublePistol"> <img class="actionInfoSmall" src="./images/actions/double_pistol.png" alt=""> </a>
+                                </p> 
+                            </div>                            
+                        </div>
+
+                        <hr class="style1">
+
+                        <!-- Pistol Information -->
+                        <div id="infoPistol" class="row">
+                            <div class="col-6">
+                                <img class="actionInfo" src="./images/actions/pistol.png" alt="">
+                            </div>
+                            <div class="col-6 text-left">
+                                <p> Action Name: Pistol </p>
+                                <p> Cost: 1 Charge </p>
+                                <p> Description: Shoots 1 Bullet </p>
+                                <p> Beats: 
+                                    <a href="#infoCharge"> <img class="actionInfoSmall" src="./images/actions/charge.png" alt=""> </a>
+                                    <a href="#infoCounter"> <img class="actionInfoSmall" src="./images/actions/counter.png" alt=""> </a>
+                                </p>
+                                <p> Can Be Defeated by: 
+                                    <a href="#infoDoublePistol"> <img class="actionInfoSmall" src="./images/actions/double_pistol.png" alt=""> </a>
+                                </p> 
+                            </div>                            
+                        </div>
+                        <hr class="style1">
+
+                        <!-- Double Pistol Information -->
+                        <div id="infoDoublePistol" class="row">
+                            <div class="col-6">
+                                <img class="actionInfo" src="./images/actions/double_pistol.png" alt="">     
+                            </div>
+                            <div class="col-6 text-left">
+                                <p> Action Name: Double Pistol </p>
+                                <p> Cost: 2 Charges </p>
+                                <p> Description: Shoots 2 Bullets </p>
+                                <p> Beats: 
+                                    <a href="#infoCharge"> <img class="actionInfoSmall" src="./images/actions/charge.png" alt=""> </a>
+                                    <a href="#infoCounter"> <img class="actionInfoSmall" src="./images/actions/counter.png" alt=""> </a>
+                                    <a href="#infoPistol"> <img class="actionInfoSmall" src="./images/actions/pistol.png" alt=""> </a>
+                                </p>
+                                <p> Can Be Defeated by: None </p> 
+                            </div>                            
+                        </div>                        
+                    </div>
+
+                    <div class="formFooter">                        
+                        <a id="tutorialBack" href="#"> Back to Menu </a>
+                    </div>  
+                </div>
+            </div>
+        </div>
 
         <!-- LOBBY SECTION -->
         <div id="sectionLobby" class="">            
@@ -204,7 +321,7 @@
                     </div>                    
               
                     <div class="formFooter">
-                        <a id="tutorial" href="#"> How to Play </a>
+                        <!-- <a id="tutorial" href="#"> How to Play </a> -->
                     </div>              
                 </div>
             </div>            

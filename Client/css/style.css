@@ -11,7 +11,8 @@ body {
     /* padding-top: 120px; */
     /* box-sizing: border-box; */
     -webkit-animation: slide 30s linear infinite;
-    color: #b29c44;
+    /* color: #b29c44; */
+    color: #161645;
 }
 
 /* Section Login */
@@ -21,7 +22,12 @@ div#sectionLogin {
     transform: translateY(15%);
 }
 
-#tutorial {
+#tutorial, #tutorialBack {
+    color: #b29c44;
+    /* color: #161645; */
+}
+
+p#counterPlayer {
     color: #b29c44;
 }
 
@@ -34,6 +40,11 @@ hr.style1{
 
 h3 {
     font-size: medium;
+}
+
+h1#lobbyGameMode {
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 @-webkit-keyframes slide {
@@ -61,7 +72,7 @@ button.action {
 }
 
 /* Hide Elements Except Login on First Load */
-#sectionMenu, #sectionLobby, #gameArea, #choices, #scoreArea, 
+#sectionMenu, #informationMenu, #sectionLobby, #gameArea, #choices, #scoreArea, 
 #charge1, #pistol1, #d_pistol1, #block1, #counter1, #evade1,
 #charge2, #pistol2, #d_pistol2, #block2, #counter2, #evade2 {
     display: none;
@@ -105,6 +116,12 @@ button.action {
     img.action {
         max-height: 70px;
     }
+    img.actionInfo {
+        max-height: 150px;
+    }
+    img.actionInfoSmall {
+        max-height: 50px;
+    }
     div#player1Action, div#player2Action {
         max-height: 70px;
         height: 70px;
@@ -119,6 +136,12 @@ button.action {
 @media (min-width: 768px) and (max-width: 991px) {
     img.action {
         max-height: 70px;
+    }
+    img.actionInfo {
+        max-height: 150px;
+    }
+    img.actionInfoSmall {
+        max-height: 50px;
     }
     div#player1Action, div#player2Action {
         max-height: 70px;
@@ -135,6 +158,12 @@ button.action {
 @media (max-width: 767px) {
     img.action {
         max-height: 50px;
+    }
+    img.actionInfo {
+        max-height: 100px;
+    }
+    img.actionInfoSmall {
+        max-height: 30px;
     }
     div#player1Action, div#player2Action {
         max-height: 50px;
@@ -180,7 +209,8 @@ button.action {
 }
 
 .formFooter {
-    background-color: #f6f6f6;
+    /* background-color: #f6f6f6; */
+    background-color: #161645;
     border-top: 1px solid #dce8f1;
     padding: 25px;
     text-align: center;

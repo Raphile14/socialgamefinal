@@ -25,6 +25,13 @@ $(document).ready(() => {
             sendMessage();
         }
     });
+    // Opening How to play
+    $("#tutorial").click(() => {
+        show("#informationMenu", "#sectionMenu");
+    });
+    $("#tutorialBack").click(() => {
+        show("#sectionMenu", "#informationMenu");
+    })
     // Enter Name Button
     $("#submitUsername").click(() => {
         changeName("#username");
@@ -45,7 +52,7 @@ $(document).ready(() => {
     // Create Lobby Button
     $("#createGuns1v1Button").click(() => {
         if (!players[player_id].game.ingame) {
-            socket.emit('createLobby', {gamemode: 'Guns1v1'});
+            socket.emit('createLobby', {gamemode: 'GUNS1V1'});
         }
     });
     // Join Lobby Button

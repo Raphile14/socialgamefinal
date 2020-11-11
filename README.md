@@ -4,16 +4,38 @@
 Spend Time Together is a group project in fulfilling a course final test for Software Engineering and Integrative Programming. The main goal of this project is to create a system that supports cross-platform compatability and provide an app for older adults to enjoy!
 
 # Bugs Found
--
+- when a player disconnects
+- bug with counter
+- during in game bug
+- when a player disconnects. it messes the current in game. player not in any lobby
+- problem with counter
+- bug found when a current players leave during a game (not yet chose an action)
 
 # Needed Features
 - Kick feature
 - Add increments to names with same string value
 - Hover on buttons
 - Wins and Loses
+- back to lobby button after game
+- scores go back to zero after a game
+- rearrange based on score
 
+# Changes
+- change code of lobby to lobby code
+- only use alternating on other player chats
+- loud win sound
+- use multiplier for the score
+- darkshade icons that cant be used yet
+- transitions
+- import ui from the base game
+
+# Use Cases to Test
+- Two or more lobbies running on the same time
 
 # Changelog
+indev 3.3.0 (10/23/2020)
+- Implemented How to Play Page
+
 indev 3.2.0 (10/23/2020)
 - Sound effects after certain events
 

@@ -184,7 +184,7 @@ module.exports = class SocketIO {
         // Updating Lobby
         function updateLobby(lobbyID, playerID, username, players, join) {
             io.to(lobbyID).emit("updateLobby", {
-                id: playerID, username, gamemode: "Guns1v1", lobby_id: lobbyID, players, join
+                id: playerID, username, gamemode: "GUNS1V1", lobby_id: lobbyID, players, join
             });
         }
 
