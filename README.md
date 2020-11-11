@@ -33,7 +33,7 @@ Spend Time Together is a group project in fulfilling a course final test for Sof
 - Two or more lobbies running on the same time
 
 # Changelog
-indev 3.3.0 (10/23/2020)
+indev 3.3.0 (11/11/2020)
 - Implemented How to Play Page
 
 indev 3.2.0 (10/23/2020)
